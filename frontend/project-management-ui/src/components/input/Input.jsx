@@ -1,3 +1,15 @@
+
+/**
+ * Input component that represents a labeled input field.
+ * It accepts various props to customize the input type, id, name, and whether it's required.
+ * @param {object} props - The properties passed to the Input component.
+ * @param {React.ReactNode} props.children - The label text for the input field.
+ * @param {string} props.type - The type of the input (e.g., "text", "password", "email").
+ * @param {string} props.id - The unique identifier for the input field.
+ * @param {string} props.name - The name attribute for the input field.
+ * @param {boolean} props.required - Whether the input field is required or not.
+ */
+
 export default function Input({children, type, id, name, required}) {
   return (
       <div className="form-group">

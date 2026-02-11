@@ -1,6 +1,11 @@
 import Input from "../input/Input";
 import Form from "../form/Form";
 
+/**
+  * SignIn component that renders a sign-in form for existing users.
+  * This component uses the Form and Input components to create a structured form layout.
+ */
+
 function SignIn() {
   return (
       <Form

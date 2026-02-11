@@ -1,6 +1,11 @@
 import Form from "../form/Form";
 import Input from "../input/Input";
 
+/**
+  * SignUp component that renders a sign-up form for new users.
+  * This component uses the Form and Input components to create a structured form layout.
+ */
+
 function SignUp() {
   return (
 

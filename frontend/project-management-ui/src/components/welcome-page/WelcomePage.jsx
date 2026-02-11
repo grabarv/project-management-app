@@ -1,5 +1,11 @@
 import './welcomePage.css'
 
+/**
+ * WelcomePage component that serves as the landing page for the application.
+ * It provides options for users to either sign in or sign up.
+ *
+ * @param {function} setCurrentPage - A function to update the current page state in the parent component.
+*/
 export default function WelcomePage({ setCurrentPage }) {
   return (
     <div className="welcome-card">
