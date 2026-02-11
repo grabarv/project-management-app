@@ -1,3 +1,4 @@
+import Input from "../input/Input";
 import Form from "../form/Form";
 
 function SignIn() {
@@ -8,15 +9,13 @@ function SignIn() {
       >
         <h2 className="form-title">Sign In Page</h2>
 
-        <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
+        <Input type="text" id="username" name="username" required>
+          Username:
+        </Input>
 
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
+        <Input type="password" id="password" name="password" required>
+          Password:
+        </Input>
       </Form>
   );
 }
