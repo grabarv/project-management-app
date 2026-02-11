@@ -1,4 +1,3 @@
-
 /**
  * Input component that represents a labeled input field.
  * It accepts various props to customize the input type, id, name, and whether it's required.
@@ -8,13 +7,27 @@
  * @param {string} props.id - The unique identifier for the input field.
  * @param {string} props.name - The name attribute for the input field.
  * @param {boolean} props.required - Whether the input field is required or not.
+ * @param {string} [props.autoComplete] - The autocomplete attribute for the input field (optional).
  */
 
-export default function Input({children, type, id, name, required}) {
+export default function Input({
+  children,
+  type,
+  id,
+  name,
+  required,
+  autoComplete,
+}) {
   return (
-      <div className="form-group">
-        <label htmlFor={id}>{children}</label>
-        <input type={type} id={id} name={name} required={required} />
-      </div>
+    <div className="form-group">
+      <label htmlFor={id}>{children}</label>
+      <input
+        type={type}
+        id={id}
+        name={name}
+        required={required}
+        autoComplete={autoComplete}
+      />
+    </div>
   );
 }

@@ -1,66 +1,63 @@
-
 .welcome-card {
-    background: white;
-    padding: 50px 40px;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    max-width: 380px;
-    width: 90%;
-    animation: fadeIn 0.5s ease;
+  background: white;
+  padding: 50px 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  max-width: 380px;
+  width: 90%;
+  animation: fadeIn 0.5s ease;
 }
 
 .welcome-card h1 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-    color: #333;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
 }
 
 .button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .welcome-card button {
-    padding: 12px 0;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-weight: 600;
+  padding: 12px 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-weight: 600;
 }
 
 .sign-in {
-    background: #4facfe;
-    color: white;
+  background: #4facfe;
+  color: white;
 }
 
 .sign-in:hover {
-    background: #3793ff;
-    transform: translateY(-2px);
+  background: #3793ff;
+  transform: translateY(-2px);
 }
 
 .sign-up {
-    background: #28c76f;
-    color: white;
+  background: #28c76f;
+  color: white;
 }
 
 .sign-up:hover {
-    background: #1ea85c;
-    transform: translateY(-2px);
+  background: #1ea85c;
+  transform: translateY(-2px);
 }
-
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
- 

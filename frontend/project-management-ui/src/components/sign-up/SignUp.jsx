@@ -2,31 +2,39 @@ import Form from "../form/Form";
 import Input from "../input/Input";
 
 /**
-  * SignUp component that renders a sign-up form for new users.
-  * This component uses the Form and Input components to create a structured form layout.
+ * SignUp component that renders a sign-up form for new users.
+ * This component uses the Form and Input components to create a structured form layout.
  */
 
 function SignUp() {
   return (
+    <Form className="form-card" onSubmit={(e) => e.preventDefault()}>
+      <h2 className="form-title">Sign Up</h2>
 
-      <Form
-        className="form-card"
-        onSubmit={(e) => e.preventDefault()}
+      <Input
+        type="text"
+        id="username"
+        name="username"
+        required
+        autoComplete="username"
       >
-        <h2 className="form-title">Sign Up</h2>
+        Username:
+      </Input>
 
-        <Input type="text" id="username" name="username" required>
-          Username:
-        </Input>
+      <Input type="email" id="email" name="email" required autoComplete="email">
+        Email:
+      </Input>
 
-        <Input type="email" id="email" name="email" required>
-          Email:
-        </Input>
-
-        <Input type="password" id="password" name="password" required>
-          Password:
-        </Input>
-      </Form>
+      <Input
+        type="password"
+        id="password"
+        name="password"
+        required
+        autoComplete="new-password"
+      >
+        Password:
+      </Input>
+    </Form>
   );
 }
 
