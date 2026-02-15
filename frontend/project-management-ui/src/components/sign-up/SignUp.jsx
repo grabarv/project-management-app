@@ -21,8 +21,31 @@ function SignUp() {
     }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("https://localhost:5001/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send sign up data");
+      }
+
+      const result = await response.json();
+      console.log("Sign up response:", result);
+    } catch (error) {
+      console.error("Sign up request error:", error);
+    }
+  };
+
   return (
-    <Form className="form-card" onSubmit={(e) => e.preventDefault()}>
+    <Form className="form-card" onSubmit={handleSubmit}>
       <h2 className="form-title">Sign Up</h2>
 
       <Input
