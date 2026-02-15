@@ -31,3 +31,4 @@
 /home/vlad/project-management-app/backend/ProjectManagement.Api/obj/Debug/net10.0/ProjectManagement.Api.pdb
 /home/vlad/project-management-app/backend/ProjectManagement.Api/obj/Debug/net10.0/ProjectManagement.Api.genruntimeconfig.cache
 /home/vlad/project-management-app/backend/ProjectManagement.Api/obj/Debug/net10.0/ref/ProjectManagement.Api.dll
+/home/vlad/project-management-app/backend/ProjectManagement.Api/obj/Debug/net10.0/ProjectManagement.Api.sourcelink.json
