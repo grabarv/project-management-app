@@ -17,6 +17,7 @@ export default function Input({
   name,
   required,
   autoComplete,
+  onChange,
 }) {
   return (
     <div className="form-group">
@@ -27,6 +28,7 @@ export default function Input({
         name={name}
         required={required}
         autoComplete={autoComplete}
+        onChange={onChange}
       />
     </div>
   );
