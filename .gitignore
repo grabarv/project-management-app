@@ -19,22 +19,22 @@ Thumbs.db
 ############################
 # Node / React / Vite
 ############################
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
+**/node_modules/
+**/dist/
+**/.vite/
 
 ############################
 # .NET / ASP.NET
 ############################
-backend/bin/
-backend/obj/
-backend/*.user
-backend/*.suo
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
 
 # Local databases
-backend/*.db
-backend/*.db-shm
-backend/*.db-wal
+**/*.db
+**/*.db-shm
+**/*.db-wal
 
 ############################
 # IDE
