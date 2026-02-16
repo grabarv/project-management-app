@@ -8,7 +8,7 @@ import { useState } from "react";
 
 function SignIn() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -20,19 +20,42 @@ function SignIn() {
     }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("https://localhost:5001/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send sign in data");
+      }
+
+      const result = await response.json();
+      console.log("Sign in response:", result);
+    } catch (error) {
+      console.error("Sign in request error:", error);
+    }
+  };
+
   return (
-    <Form className="form-card" onSubmit={(e) => e.preventDefault()}>
+    <Form className="form-card" onSubmit={handleSubmit}>
       <h2 className="form-title">Sign In Page</h2>
 
       <Input
-        type="text"
-        id="username"
-        name="username"
+        type="email"
+        id="email"
+        name="email"
         required
-        autoComplete="username"
+        autoComplete="email"
         onChange={handleChange}
       >
-        Username:
+        Email:
       </Input>
 
       <Input

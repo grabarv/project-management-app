@@ -71,6 +71,40 @@ app.MapPost("/api/auth/signup", async (
 })
 .WithName("SignUp");
 
+app.MapPost("/api/auth/signin", async (
+    SignInRequest request,
+    AppDbContext db,
+    IPasswordHasher<AppUser> passwordHasher) =>
+{
+    var user = await db.Users
+        .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+    if (user is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var verificationResult = passwordHasher.VerifyHashedPassword(
+        user,
+        user.PasswordHash,
+        request.Password);
+
+    if (verificationResult == PasswordVerificationResult.Failed)
+    {
+        return Results.Unauthorized();
+    }
+
+    return Results.Ok(new
+    {
+        message = "Sign-in successful",
+        userId = user.Id,
+        username = user.Username,
+        email = user.Email
+    });
+})
+.WithName("SignIn");
+
 app.Run();
 
 record SignUpRequest(string Username, string Email, string Password);
+record SignInRequest(string Email, string Password);
