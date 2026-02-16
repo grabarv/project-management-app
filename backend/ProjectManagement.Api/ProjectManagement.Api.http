@@ -1,6 +1,26 @@
-@ProjectManagement.Api_HostAddress = http://localhost:5223
+@ProjectManagement.Api_HostAddress = https://localhost:5001
 
-GET {{ProjectManagement.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+###
+
+### Sign up
+POST {{ProjectManagement.Api_HostAddress}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "vlad",
+  "email": "vlad@example.com",
+  "password": "P@ssw0rd123"
+}
+
+###
+
+### Sign in
+POST {{ProjectManagement.Api_HostAddress}}/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "vlad@example.com",
+  "password": "P@ssw0rd123"
+}
 
 ###

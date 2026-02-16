@@ -24,6 +24,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Creates schema from model when DB is empty.
     db.Database.EnsureCreated();
 }
 
@@ -41,6 +42,7 @@ app.MapPost("/api/auth/signup", async (
     AppDbContext db,
     IPasswordHasher<AppUser> passwordHasher) =>
 {
+    // Enforce unique email at API level before hitting DB unique constraint exception.
     var existingUser = await db.Users
         .AnyAsync(user => user.Email == request.Email);
 
@@ -76,6 +78,7 @@ app.MapPost("/api/auth/signin", async (
     AppDbContext db,
     IPasswordHasher<AppUser> passwordHasher) =>
 {
+    // Sign-in is email-based for now.
     var user = await db.Users
         .FirstOrDefaultAsync(u => u.Email == request.Email);
 
