@@ -1,41 +1,113 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ProjectManagement.Api.Data;
+using ProjectManagement.Api.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Creates schema from model when DB is empty.
+    db.Database.EnsureCreated();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.UseCors("FrontendDev");
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/auth/signup", async (
+    SignUpRequest request,
+    AppDbContext db,
+    IPasswordHasher<AppUser> passwordHasher) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    // Enforce unique email at API level before hitting DB unique constraint exception.
+    var existingUser = await db.Users
+        .AnyAsync(user => user.Email == request.Email);
+
+    if (existingUser)
+    {
+        return Results.Conflict(new { message = "Email is already registered" });
+    }
+
+    var user = new AppUser
+    {
+        Username = request.Username,
+        Email = request.Email,
+        CreatedAtUtc = DateTime.UtcNow
+    };
+
+    user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
+
+    db.Users.Add(user);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new
+    {
+        message = "Sign-up data saved",
+        userId = user.Id,
+        username = user.Username,
+        email = user.Email
+    });
 })
-.WithName("GetWeatherForecast");
+.WithName("SignUp");
+
+app.MapPost("/api/auth/signin", async (
+    SignInRequest request,
+    AppDbContext db,
+    IPasswordHasher<AppUser> passwordHasher) =>
+{
+    // Sign-in is email-based for now.
+    var user = await db.Users
+        .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+    if (user is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var verificationResult = passwordHasher.VerifyHashedPassword(
+        user,
+        user.PasswordHash,
+        request.Password);
+
+    if (verificationResult == PasswordVerificationResult.Failed)
+    {
+        return Results.Unauthorized();
+    }
+
+    return Results.Ok(new
+    {
+        message = "Sign-in successful",
+        userId = user.Id,
+        username = user.Username,
+        email = user.Email
+    });
+})
+.WithName("SignIn");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+record SignUpRequest(string Username, string Email, string Password);
+record SignInRequest(string Email, string Password);
