@@ -1,6 +1,6 @@
 const API_BASE_URL = "https://localhost:5001/api/auth";
 
-export async function submitAuthRequest(endpoint, formData, actionLabel) {
+export async function submitAuthRequest(endpoint, formData) {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: "POST",
@@ -10,13 +10,25 @@ export async function submitAuthRequest(endpoint, formData, actionLabel) {
       body: JSON.stringify(formData),
     });
 
+    const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      throw new Error(`Failed to send ${actionLabel} data`);
+      return {
+        ok: false,
+        message: result.message || "Request failed",
+      };
     }
 
-    const result = await response.json();
-    console.log(`${actionLabel} response:`, result);
+    return {
+      ok: true,
+      data: result,
+      message: result.message || "Success",
+    };
   } catch (error) {
-    console.error(`${actionLabel} request error:`, error);
+    return {
+      ok: false,
+      message: "Network error. Please try again.",
+      error,
+    };
   }
 }

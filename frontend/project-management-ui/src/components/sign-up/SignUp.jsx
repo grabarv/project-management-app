@@ -2,6 +2,7 @@ import Form from "../form/Form";
 import Input from "../input/Input";
 import { useState } from "react";
 import { submitAuthRequest } from "../../services/authApi";
+import Notification from "../notification/Notification";
 /**
  * SignUp component that renders a sign-up form for new users.
  * This component uses the Form and Input components to create a structured form layout.
@@ -13,6 +14,7 @@ function SignUp() {
     email: "",
     password: "",
   });
+  const [notification, setNotification] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,46 +26,62 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await submitAuthRequest("signup", formData, "Sign up");
+    const result = await submitAuthRequest("signup", formData);
+
+    if (result.ok) {
+      setNotification({ type: "success", message: "Account created successfully" });
+      return;
+    }
+    setNotification({ type: "error", message: result.message || "Sign up failed" });
   };
 
   return (
-    <Form className="form-card" onSubmit={handleSubmit}>
-      <h2 className="form-title">Sign Up</h2>
+    <>
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
-      <Input
-        type="text"
-        id="username"
-        name="username"
-        required
-        autoComplete="username"
-        onChange={handleChange}
-      >
-        Username:
-      </Input>
+      <Form className="form-card" onSubmit={handleSubmit}>
+        <h2 className="form-title">Sign Up</h2>
 
-      <Input
-        type="email"
-        id="email"
-        name="email"
-        required
-        autoComplete="email"
-        onChange={handleChange}
-      >
-        Email:
-      </Input>
+        <Input
+          type="text"
+          id="username"
+          name="username"
+          required
+          autoComplete="username"
+          onChange={handleChange}
+        >
+          Username:
+        </Input>
 
-      <Input
-        type="password"
-        id="password"
-        name="password"
-        required
-        autoComplete="new-password"
-        onChange={handleChange}
-      >
-        Password:
-      </Input>
-    </Form>
+        <Input
+          type="email"
+          id="email"
+          name="email"
+          required
+          autoComplete="email"
+          onChange={handleChange}
+        >
+          Email:
+        </Input>
+
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autoComplete="new-password"
+          onChange={handleChange}
+        >
+          Password:
+        </Input>
+      </Form>
+    </>
   );
 }
 
