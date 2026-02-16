@@ -1,6 +1,14 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ProjectManagement.Api.Data;
+using ProjectManagement.Api.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendDev", policy =>
@@ -13,6 +21,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -22,15 +36,38 @@ app.UseCors("FrontendDev");
 app.UseHttpsRedirection();
 
 
-app.MapPost("/api/auth/signup", (SignUpRequest request) =>
+app.MapPost("/api/auth/signup", async (
+    SignUpRequest request,
+    AppDbContext db,
+    IPasswordHasher<AppUser> passwordHasher) =>
 {
-    Console.WriteLine("=== SIGN UP REQUEST RECEIVED ===");
-    Console.WriteLine($"Username: {request.Username}");
-    Console.WriteLine($"Email: {request.Email}");
-    Console.WriteLine($"Password: {request.Password}");
-    Console.WriteLine("===============================");
+    var existingUser = await db.Users
+        .AnyAsync(user => user.Email == request.Email);
 
-    return Results.Ok(new { message = "Sign-up data received" });
+    if (existingUser)
+    {
+        return Results.Conflict(new { message = "Email is already registered" });
+    }
+
+    var user = new AppUser
+    {
+        Username = request.Username,
+        Email = request.Email,
+        CreatedAtUtc = DateTime.UtcNow
+    };
+
+    user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
+
+    db.Users.Add(user);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new
+    {
+        message = "Sign-up data saved",
+        userId = user.Id,
+        username = user.Username,
+        email = user.Email
+    });
 })
 .WithName("SignUp");
 
