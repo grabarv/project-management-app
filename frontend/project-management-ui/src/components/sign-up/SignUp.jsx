@@ -1,6 +1,7 @@
 import Form from "../form/Form";
 import Input from "../input/Input";
 import { useState } from "react";
+import { submitAuthRequest } from "../../services/authApi";
 /**
  * SignUp component that renders a sign-up form for new users.
  * This component uses the Form and Input components to create a structured form layout.
@@ -23,25 +24,7 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch("https://localhost:5001/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send sign up data");
-      }
-
-      const result = await response.json();
-      console.log("Sign up response:", result);
-    } catch (error) {
-      console.error("Sign up request error:", error);
-    }
+    await submitAuthRequest("signup", formData, "Sign up");
   };
 
   return (

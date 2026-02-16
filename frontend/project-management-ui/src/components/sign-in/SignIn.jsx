@@ -1,6 +1,7 @@
 import Input from "../input/Input";
 import Form from "../form/Form";
 import { useState } from "react";
+import { submitAuthRequest } from "../../services/authApi";
 /**
  * SignIn component that renders a sign-in form for existing users.
  * This component uses the Form and Input components to create a structured form layout.
@@ -22,25 +23,7 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch("https://localhost:5001/api/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send sign in data");
-      }
-
-      const result = await response.json();
-      console.log("Sign in response:", result);
-    } catch (error) {
-      console.error("Sign in request error:", error);
-    }
+    await submitAuthRequest("signin", formData, "Sign in");
   };
 
   return (
