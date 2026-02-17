@@ -17,7 +17,7 @@ export async function submitAuthRequest(endpoint, formData) {
     // Some error responses may not include JSON payload.
     const result = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
+    if (!response.ok) { 
       return {
         ok: false,
         message: result.message || "Request failed",
