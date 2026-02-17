@@ -8,7 +8,7 @@ import Notification from "../notification/Notification";
  * This component uses the Form and Input components to create a structured form layout.
  */
 
-function SignIn() {
+function SignIn({ onAuthSuccess = () => {} }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,7 +28,7 @@ function SignIn() {
     const result = await submitAuthRequest("signin", formData);
 
     if (result.ok) {
-      setNotification({ type: "success", message: "Signed in successfully" });
+      onAuthSuccess();
       return;
     }
 

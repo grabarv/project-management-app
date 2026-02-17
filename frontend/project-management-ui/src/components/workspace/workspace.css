@@ -1,0 +1,15 @@
+.workspace-layout {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f6f8fb;
+}
+
+.workspace-column {
+  min-height: 100vh;
+}
+
+.workspace-column:first-child {
+  border-right: 1px solid #d7deea;
+}
