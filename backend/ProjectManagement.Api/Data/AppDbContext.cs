@@ -23,6 +23,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasMaxLength(200);
 
         modelBuilder.Entity<AppProject>()
+            .Property(project => project.Name)
+            .HasMaxLength(200);
+
+        modelBuilder.Entity<AppProject>()
             .Property(project => project.Description)
             .HasMaxLength(1000);
 
