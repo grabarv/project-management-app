@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Api.Data;
 using ProjectManagement.Api.Endpoints;
 
@@ -9,8 +10,7 @@ public static class WebApplicationExtensions
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        // Keep EnsureCreated for now (no migrations in this refactor).
-        db.Database.EnsureCreated();
+        db.Database.Migrate();
         return app;
     }
 
