@@ -30,6 +30,45 @@
   font-size: 0.95rem;
 }
 
+.create-project-form {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.create-project-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.create-project-form input,
+.create-project-form textarea {
+  border: 1px solid #c8d4e6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font: inherit;
+}
+
+.create-project-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.create-project-form button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #1f78ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-project-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .project-list {
   list-style: none;
   margin: 0;
@@ -67,6 +106,35 @@
   margin: 0 0 18px;
   color: #354e6c;
   line-height: 1.45;
+}
+
+.project-actions {
+  margin-top: 18px;
+}
+
+.project-actions button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.project-actions .danger {
+  background: #fde7e7;
+  border-color: #f3b2b2;
+  color: #961f1f;
+}
+
+.project-actions .neutral {
+  background: #ebf1fb;
+  border-color: #c9d8f3;
+  color: #284673;
+}
+
+.project-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .workspace-empty-state {
