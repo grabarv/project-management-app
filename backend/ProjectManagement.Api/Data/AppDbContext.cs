@@ -16,18 +16,26 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<AppUser>()
             .Property(user => user.Username)
+            .IsRequired()
             .HasMaxLength(100);
 
         modelBuilder.Entity<AppUser>()
             .Property(user => user.Email)
+            .IsRequired()
             .HasMaxLength(200);
+
+        modelBuilder.Entity<AppUser>()
+            .Property(user => user.PasswordHash)
+            .IsRequired();
 
         modelBuilder.Entity<AppProject>()
             .Property(project => project.Name)
+            .IsRequired()
             .HasMaxLength(200);
 
         modelBuilder.Entity<AppProject>()
             .Property(project => project.Description)
+            .IsRequired()
             .HasMaxLength(1000);
 
         modelBuilder.Entity<AppProject>()

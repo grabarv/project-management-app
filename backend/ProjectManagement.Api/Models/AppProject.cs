@@ -3,8 +3,8 @@ namespace ProjectManagement.Api.Models;
 public class AppProject
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public required string Name { get; set; }
+    public required string Description { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime DueDateUtc { get; set; }
 

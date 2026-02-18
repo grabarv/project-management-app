@@ -29,6 +29,7 @@ public static class AuthEndpoints
             {
                 Username = request.Username,
                 Email = request.Email,
+                PasswordHash = string.Empty,
                 CreatedAtUtc = DateTime.UtcNow
             };
 
