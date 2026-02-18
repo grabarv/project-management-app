@@ -6,6 +6,12 @@ import Workspace from "./components/workspace/Workspace";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("welcome");
+  const [authUser, setAuthUser] = useState(null);
+
+  const handleAuthSuccess = (authPayload) => {
+    setAuthUser(authPayload ?? null);
+    setCurrentPage("workspace");
+  };
 
   return (
     <>
@@ -13,12 +19,12 @@ function App() {
         <WelcomePage setCurrentPage={setCurrentPage} />
       )}
       {currentPage === "login" && (
-        <SignIn onAuthSuccess={() => setCurrentPage("workspace")} />
+        <SignIn onAuthSuccess={handleAuthSuccess} />
       )}
       {currentPage === "register" && (
-        <SignUp onAuthSuccess={() => setCurrentPage("workspace")} />
+        <SignUp onAuthSuccess={handleAuthSuccess} />
       )}
-      {currentPage === "workspace" && <Workspace />}
+      {currentPage === "workspace" && <Workspace currentUser={authUser} />}
     </>
   );
 }

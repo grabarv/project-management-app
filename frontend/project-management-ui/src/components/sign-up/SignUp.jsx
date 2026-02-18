@@ -29,7 +29,7 @@ function SignUp({ onAuthSuccess = () => {} }) {
     const result = await submitAuthRequest("signup", formData);
 
     if (result.ok) {
-      onAuthSuccess();
+      onAuthSuccess(result.data);
       return;
     }
     setNotification({ type: "error", message: result.message || "Sign up failed" });

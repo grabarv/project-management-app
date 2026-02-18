@@ -28,7 +28,7 @@ function SignIn({ onAuthSuccess = () => {} }) {
     const result = await submitAuthRequest("signin", formData);
 
     if (result.ok) {
-      onAuthSuccess();
+      onAuthSuccess(result.data);
       return;
     }
 

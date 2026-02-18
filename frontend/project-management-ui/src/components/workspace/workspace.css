@@ -2,8 +2,8 @@
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: #f6f8fb;
+  grid-template-columns: 320px 1fr;
+  background: #f4f7fb;
 }
 
 .workspace-column {
@@ -12,4 +12,96 @@
 
 .workspace-column:first-child {
   border-right: 1px solid #d7deea;
+}
+
+.workspace-sidebar {
+  padding: 28px 20px;
+  background: #ffffff;
+}
+
+.workspace-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.workspace-header p {
+  margin: 6px 0 18px;
+  color: #4f647e;
+  font-size: 0.95rem;
+}
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.project-item {
+  width: 100%;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background: #f8fafe;
+  color: #1b2e47;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.project-item.selected {
+  border-color: #1f78ff;
+  background: #e9f2ff;
+}
+
+.workspace-details {
+  padding: 28px 32px;
+}
+
+.workspace-details h2 {
+  margin: 0 0 12px;
+}
+
+.project-description {
+  margin: 0 0 18px;
+  color: #354e6c;
+  line-height: 1.45;
+}
+
+.workspace-empty-state {
+  color: #3e5875;
+  max-width: 420px;
+  padding-top: 40px;
+}
+
+.workspace-empty-state p {
+  margin: 8px 0 0;
+}
+
+.workspace-info,
+.workspace-error {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+.workspace-error {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .workspace-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .workspace-column:first-child {
+    border-right: 0;
+    border-bottom: 1px solid #d7deea;
+    min-height: auto;
+  }
+
+  .workspace-details {
+    padding-top: 20px;
+  }
 }
