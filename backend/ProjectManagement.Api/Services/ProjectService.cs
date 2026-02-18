@@ -34,6 +34,13 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(400, "CreatedByUserId is invalid");
         }
 
+        var createdAtUtc = DateTime.UtcNow;
+        var dueDateUtc = EnsureUtc(request.DueDateUtc);
+        if (dueDateUtc < createdAtUtc)
+        {
+            return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
+        }
+
         var participantsResult = await ResolveParticipantsAsync(request.ParticipatingUserIds);
         if (!participantsResult.Success)
         {
@@ -44,8 +51,8 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         {
             Name = request.Name,
             Description = request.Description,
-            CreatedAtUtc = DateTime.UtcNow,
-            DueDateUtc = request.DueDateUtc,
+            CreatedAtUtc = createdAtUtc,
+            DueDateUtc = dueDateUtc,
             CreatedByUserId = request.CreatedByUserId,
             ParticipatingUsers = participantsResult.Value!
         };
@@ -67,6 +74,12 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(404, "Project not found");
         }
 
+        var dueDateUtc = EnsureUtc(request.DueDateUtc);
+        if (dueDateUtc < project.CreatedAtUtc)
+        {
+            return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
+        }
+
         var participantsResult = await ResolveParticipantsAsync(request.ParticipatingUserIds);
         if (!participantsResult.Success)
         {
@@ -75,7 +88,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
 
         project.Name = request.Name;
         project.Description = request.Description;
-        project.DueDateUtc = request.DueDateUtc;
+        project.DueDateUtc = dueDateUtc;
         project.ParticipatingUsers = participantsResult.Value!;
 
         await db.SaveChangesAsync();
@@ -124,5 +137,12 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             project.DueDateUtc,
             project.CreatedByUserId,
             project.ParticipatingUsers.Select(user => user.Id).ToList());
+    }
+
+    private static DateTime EnsureUtc(DateTime dateTime)
+    {
+        return dateTime.Kind == DateTimeKind.Utc
+            ? dateTime
+            : dateTime.ToUniversalTime();
     }
 }

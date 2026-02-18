@@ -16,6 +16,7 @@ export default function Workspace({ currentUser }) {
     description: "",
     dueDate: "",
   });
+  const todayDateString = new Date().toISOString().slice(0, 10);
 
   const loadProjects = async () => {
     setIsLoading(true);
@@ -101,6 +102,10 @@ export default function Workspace({ currentUser }) {
     const dueDateUtc = toApiDateTime(createForm.dueDate);
     if (!dueDateUtc) {
       setActionError("Please provide a valid due date.");
+      return;
+    }
+    if (createForm.dueDate < todayDateString) {
+      setActionError("Due date cannot be earlier than creation date.");
       return;
     }
 
@@ -214,6 +219,7 @@ export default function Workspace({ currentUser }) {
             type="date"
             name="dueDate"
             required
+            min={todayDateString}
             value={createForm.dueDate}
             onChange={handleCreateChange}
           />
