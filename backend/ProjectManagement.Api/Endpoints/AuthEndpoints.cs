@@ -8,6 +8,9 @@ namespace ProjectManagement.Api.Endpoints;
 
 public static class AuthEndpoints
 {
+    /// <summary>
+    /// Maps sign-up and sign-in endpoints.
+    /// </summary>
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var auth = app.MapGroup("/api/auth");
@@ -17,6 +20,12 @@ public static class AuthEndpoints
             AppDbContext db,
             IPasswordHasher<AppUser> passwordHasher) =>
         {
+            var validationError = ValidateSignUpRequest(request);
+            if (validationError is not null)
+            {
+                return validationError;
+            }
+
             var existingUser = await db.Users
                 .AnyAsync(user => user.Email == request.Email);
 
@@ -53,6 +62,12 @@ public static class AuthEndpoints
             AppDbContext db,
             IPasswordHasher<AppUser> passwordHasher) =>
         {
+            var validationError = ValidateSignInRequest(request);
+            if (validationError is not null)
+            {
+                return validationError;
+            }
+
             var user = await db.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -82,5 +97,40 @@ public static class AuthEndpoints
         .WithName("SignIn");
 
         return app;
+    }
+
+    private static IResult? ValidateSignUpRequest(SignUpRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Username))
+        {
+            return Results.BadRequest(new { message = "Username is required" });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            return Results.BadRequest(new { message = "Email is required" });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 8)
+        {
+            return Results.BadRequest(new { message = "Password must contain at least 8 characters" });
+        }
+
+        return null;
+    }
+
+    private static IResult? ValidateSignInRequest(SignInRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            return Results.BadRequest(new { message = "Email is required" });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Results.BadRequest(new { message = "Password is required" });
+        }
+
+        return null;
     }
 }

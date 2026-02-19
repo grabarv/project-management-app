@@ -4,9 +4,20 @@ async function parseResponse(response, fallback) {
   return response.json().catch(() => fallback);
 }
 
-export async function fetchProjects() {
+function withUserHeader(userId) {
+  return {
+    "X-User-Id": String(userId),
+  };
+}
+
+/**
+ * Fetches projects visible to the current user.
+ */
+export async function fetchProjects(userId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/`);
+    const response = await fetch(`${API_BASE_URL}/`, {
+      headers: withUserHeader(userId),
+    });
     const result = await parseResponse(response, []);
 
     if (!response.ok) {
@@ -29,12 +40,16 @@ export async function fetchProjects() {
   }
 }
 
-export async function createProject(payload) {
+/**
+ * Sends a create-project request scoped to the current user.
+ */
+export async function createProject(payload, userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...withUserHeader(userId),
       },
       body: JSON.stringify(payload),
     });
@@ -57,12 +72,13 @@ export async function createProject(payload) {
   }
 }
 
-export async function updateProject(projectId, payload) {
+export async function updateProject(projectId, payload, userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/${projectId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        ...withUserHeader(userId),
       },
       body: JSON.stringify(payload),
     });
@@ -85,10 +101,11 @@ export async function updateProject(projectId, payload) {
   }
 }
 
-export async function deleteProject(projectId) {
+export async function deleteProject(projectId, userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/${projectId}`, {
       method: "DELETE",
+      headers: withUserHeader(userId),
     });
 
     if (!response.ok) {

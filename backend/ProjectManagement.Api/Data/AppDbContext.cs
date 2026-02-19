@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Keep emails unique to prevent duplicate identities.
         modelBuilder.Entity<AppUser>()
             .HasIndex(user => user.Email)
             .IsUnique();
@@ -47,6 +48,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<AppProject>()
             .HasMany(project => project.ParticipatingUsers)
             .WithMany(user => user.ParticipatingProjects)
+            // Explicit join entity makes DB schema predictable for migrations.
             .UsingEntity<Dictionary<string, object>>(
                 "ProjectParticipant",
                 right => right

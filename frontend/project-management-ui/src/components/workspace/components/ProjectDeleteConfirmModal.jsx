@@ -9,6 +9,7 @@ import { useNotification } from "../../notification/notificationContext";
 export default function ProjectDeleteConfirmModal({
   projectId,
   projectName,
+  currentUser,
   onClose,
   onDeleted,
 }) {
@@ -16,9 +17,14 @@ export default function ProjectDeleteConfirmModal({
   const { showError, showSuccess } = useNotification();
 
   const handleConfirmDelete = async () => {
+    if (!currentUser?.userId) {
+      showError("Missing user information. Please sign in again.");
+      return;
+    }
+
     setIsDeleting(true);
 
-    const result = await deleteProject(projectId);
+    const result = await deleteProject(projectId, currentUser.userId);
     if (!result.ok) {
       showError(result.message || "Failed to delete project");
       setIsDeleting(false);

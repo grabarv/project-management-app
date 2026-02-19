@@ -6,6 +6,9 @@ namespace ProjectManagement.Api.Extensions;
 
 public static class WebApplicationExtensions
 {
+    /// <summary>
+    /// Applies pending EF Core migrations on startup.
+    /// </summary>
     public static WebApplication InitializeDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -14,6 +17,9 @@ public static class WebApplicationExtensions
         return app;
     }
 
+    /// <summary>
+    /// Configures cross-cutting middleware in execution order.
+    /// </summary>
     public static WebApplication UseApplicationPipeline(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -27,6 +33,9 @@ public static class WebApplicationExtensions
         return app;
     }
 
+    /// <summary>
+    /// Maps endpoint groups used by the API.
+    /// </summary>
     public static WebApplication MapApplicationEndpoints(this WebApplication app)
     {
         app.MapAuthEndpoints();

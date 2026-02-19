@@ -1,3 +1,6 @@
+/**
+ * Left-side project navigation panel.
+ */
 export default function WorkspaceSidebar({
   currentUser,
   onStartCreateProject,

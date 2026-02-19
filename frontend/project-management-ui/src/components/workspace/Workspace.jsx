@@ -20,9 +20,15 @@ export default function Workspace({ currentUser }) {
   const { showError } = useNotification();
 
   const loadProjects = useCallback(async () => {
+    if (!currentUser?.userId) {
+      setProjects([]);
+      setIsLoading(false);
+      return false;
+    }
+
     setIsLoading(true);
 
-    const result = await fetchProjects();
+    const result = await fetchProjects(currentUser.userId);
     if (!result.ok) {
       setProjects([]);
       showError(result.message || "Failed to load projects");
@@ -33,7 +39,7 @@ export default function Workspace({ currentUser }) {
     setProjects(result.data);
     setIsLoading(false);
     return true;
-  }, [showError]);
+  }, [currentUser, showError]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -104,6 +110,7 @@ export default function Workspace({ currentUser }) {
         />
       ) : (
         <WorkspaceDetails
+          currentUser={currentUser}
           selectedProject={selectedProject}
           isCreator={isCreator}
           onProjectDeleted={handleProjectDeleted}

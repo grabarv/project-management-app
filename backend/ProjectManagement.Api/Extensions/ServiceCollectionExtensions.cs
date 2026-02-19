@@ -8,6 +8,9 @@ namespace ProjectManagement.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers application-level services and infrastructure dependencies.
+    /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOpenApi();

@@ -41,13 +41,16 @@ export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onPr
     setIsSubmitting(true);
 
     // Only creator is assigned initially; participants can be managed later.
-    const result = await createProject({
-      name: createForm.name.trim(),
-      description: createForm.description.trim(),
-      dueDateUtc,
-      createdByUserId: currentUser.userId,
-      participatingUserIds: [],
-    });
+    const result = await createProject(
+      {
+        name: createForm.name.trim(),
+        description: createForm.description.trim(),
+        dueDateUtc,
+        createdByUserId: currentUser.userId,
+        participatingUserIds: [],
+      },
+      currentUser.userId
+    );
 
     if (!result.ok) {
       showError(result.message || "Failed to create project");

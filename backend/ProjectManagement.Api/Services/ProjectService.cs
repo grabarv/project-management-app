@@ -7,28 +7,46 @@ namespace ProjectManagement.Api.Services;
 
 public sealed class ProjectService(AppDbContext db) : IProjectService
 {
-    public async Task<IReadOnlyList<ProjectResponse>> GetAllAsync()
+    public async Task<IReadOnlyList<ProjectResponse>> GetAllAsync(int currentUserId)
     {
         return await db.Projects
             .AsNoTracking()
             .Include(project => project.ParticipatingUsers)
+            .Where(project =>
+                project.CreatedByUserId == currentUserId ||
+                project.ParticipatingUsers.Any(user => user.Id == currentUserId))
             .Select(project => ToResponse(project))
             .ToListAsync();
     }
 
-    public async Task<ProjectResponse?> GetByIdAsync(int id)
+    public async Task<OperationResult<ProjectResponse>> GetByIdAsync(int id, int currentUserId)
     {
         var project = await db.Projects
             .AsNoTracking()
             .Include(p => p.ParticipatingUsers)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        return project is null ? null : ToResponse(project);
+        if (project is null)
+        {
+            return OperationResult<ProjectResponse>.Fail(404, "Project not found");
+        }
+
+        if (!CanAccess(project, currentUserId))
+        {
+            return OperationResult<ProjectResponse>.Fail(403, "You do not have access to this project");
+        }
+
+        return OperationResult<ProjectResponse>.Ok(ToResponse(project));
     }
 
-    public async Task<OperationResult<ProjectResponse>> CreateAsync(CreateProjectRequest request)
+    public async Task<OperationResult<ProjectResponse>> CreateAsync(CreateProjectRequest request, int currentUserId)
     {
-        var creatorExists = await db.Users.AnyAsync(user => user.Id == request.CreatedByUserId);
+        if (request.CreatedByUserId != currentUserId)
+        {
+            return OperationResult<ProjectResponse>.Fail(403, "CreatedByUserId must match the current user");
+        }
+
+        var creatorExists = await db.Users.AnyAsync(user => user.Id == currentUserId);
         if (!creatorExists)
         {
             return OperationResult<ProjectResponse>.Fail(400, "CreatedByUserId is invalid");
@@ -36,7 +54,8 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
 
         var createdAtUtc = DateTime.UtcNow;
         var dueDateUtc = EnsureUtc(request.DueDateUtc);
-        if (dueDateUtc < createdAtUtc)
+        // Compare by calendar day so "today" stays valid regardless of current clock time.
+        if (dueDateUtc.Date < createdAtUtc.Date)
         {
             return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
         }
@@ -53,7 +72,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             Description = request.Description,
             CreatedAtUtc = createdAtUtc,
             DueDateUtc = dueDateUtc,
-            CreatedByUserId = request.CreatedByUserId,
+            CreatedByUserId = currentUserId,
             ParticipatingUsers = participantsResult.Value!
         };
 
@@ -63,7 +82,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         return OperationResult<ProjectResponse>.Created(ToResponse(project));
     }
 
-    public async Task<OperationResult<ProjectResponse>> UpdateAsync(int id, UpdateProjectRequest request)
+    public async Task<OperationResult<ProjectResponse>> UpdateAsync(int id, UpdateProjectRequest request, int currentUserId)
     {
         var project = await db.Projects
             .Include(p => p.ParticipatingUsers)
@@ -74,8 +93,14 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(404, "Project not found");
         }
 
+        if (project.CreatedByUserId != currentUserId)
+        {
+            return OperationResult<ProjectResponse>.Fail(403, "Only project creator can update this project");
+        }
+
         var dueDateUtc = EnsureUtc(request.DueDateUtc);
-        if (dueDateUtc < project.CreatedAtUtc)
+        // Due date is day-based input in UI, so validate at date granularity.
+        if (dueDateUtc.Date < project.CreatedAtUtc.Date)
         {
             return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
         }
@@ -96,12 +121,17 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         return OperationResult<ProjectResponse>.Ok(ToResponse(project));
     }
 
-    public async Task<OperationResult<bool>> DeleteAsync(int id)
+    public async Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId)
     {
         var project = await db.Projects.FirstOrDefaultAsync(p => p.Id == id);
         if (project is null)
         {
             return OperationResult<bool>.Fail(404, "Project not found");
+        }
+
+        if (project.CreatedByUserId != currentUserId)
+        {
+            return OperationResult<bool>.Fail(403, "Only project creator can delete this project");
         }
 
         db.Projects.Remove(project);
@@ -144,5 +174,11 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         return dateTime.Kind == DateTimeKind.Utc
             ? dateTime
             : dateTime.ToUniversalTime();
+    }
+
+    private static bool CanAccess(AppProject project, int currentUserId)
+    {
+        return project.CreatedByUserId == currentUserId ||
+               project.ParticipatingUsers.Any(user => user.Id == currentUserId);
     }
 }

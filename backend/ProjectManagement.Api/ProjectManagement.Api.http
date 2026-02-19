@@ -24,3 +24,30 @@ Content-Type: application/json
 }
 
 ###
+
+### Projects - list (requires X-User-Id header)
+GET {{ProjectManagement.Api_HostAddress}}/api/projects/
+X-User-Id: 1
+
+###
+
+### Projects - create
+POST {{ProjectManagement.Api_HostAddress}}/api/projects/
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "name": "Sample project",
+  "description": "Project created from .http file",
+  "dueDateUtc": "2026-12-31T12:00:00Z",
+  "createdByUserId": 1,
+  "participatingUserIds": []
+}
+
+###
+
+### Projects - delete
+DELETE {{ProjectManagement.Api_HostAddress}}/api/projects/1
+X-User-Id: 1
+
+###

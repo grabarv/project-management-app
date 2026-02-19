@@ -6,6 +6,7 @@ import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
  * Right-side project details view with creator-only delete action.
  */
 export default function WorkspaceDetails({
+  currentUser,
   selectedProject,
   isCreator,
   onProjectDeleted,
@@ -50,6 +51,7 @@ export default function WorkspaceDetails({
         <ProjectDeleteConfirmModal
           projectId={selectedProject.id}
           projectName={selectedProject.name}
+          currentUser={currentUser}
           onClose={() => setIsDeleteModalOpen(false)}
           onDeleted={onProjectDeleted}
         />
