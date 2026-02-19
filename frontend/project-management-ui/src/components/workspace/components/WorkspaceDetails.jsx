@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { formatDate } from "../utils";
+import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
 
+/**
+ * Right-side project details view with creator-only delete action.
+ */
 export default function WorkspaceDetails({
   selectedProject,
   isCreator,
-  isSubmitting,
-  onDeleteSelectedProject,
+  onProjectDeleted,
 }) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   return (
     <section className="workspace-column workspace-details">
       {selectedProject ? (
@@ -23,8 +29,7 @@ export default function WorkspaceDetails({
               <button
                 type="button"
                 className="danger"
-                disabled={isSubmitting}
-                onClick={onDeleteSelectedProject}
+                onClick={() => setIsDeleteModalOpen(true)}
               >
                 Delete project
               </button>
@@ -40,6 +45,14 @@ export default function WorkspaceDetails({
           <h2>Select a project</h2>
           <p>Choose a project name from the left side to view details here.</p>
         </div>
+      )}
+      {isDeleteModalOpen && selectedProject && (
+        <ProjectDeleteConfirmModal
+          projectId={selectedProject.id}
+          projectName={selectedProject.name}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDeleted={onProjectDeleted}
+        />
       )}
     </section>
   );

@@ -4,6 +4,10 @@ import { EMPTY_CREATE_FORM } from "../constants";
 import { toApiDateTime } from "../utils";
 import { useNotification } from "../../notification/notificationContext";
 
+/**
+ * Project creation form view rendered on the right side of the workspace.
+ * Keeps form state local and reports success to parent via callback.
+ */
 export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onProjectCreated }) {
   const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +40,7 @@ export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onPr
 
     setIsSubmitting(true);
 
+    // Only creator is assigned initially; participants can be managed later.
     const result = await createProject({
       name: createForm.name.trim(),
       description: createForm.description.trim(),

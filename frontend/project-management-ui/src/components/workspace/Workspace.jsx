@@ -1,18 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./workspace.css";
-import { deleteProject, fetchProjects } from "../../services/projectApi";
+import { fetchProjects } from "../../services/projectApi";
 import WorkspaceSidebar from "./components/WorkspaceSidebar";
 import WorkspaceDetails from "./components/WorkspaceDetails";
 import WorkspaceCreateProjectForm from "./components/WorkspaceCreateProjectForm";
 import { useNotification } from "../notification/notificationContext";
 
+/**
+ * Workspace container:
+ * - loads user-visible projects
+ * - coordinates which right-side panel is active
+ * - reacts to create/delete completion callbacks from child views
+ */
 export default function Workspace({ currentUser }) {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activePanel, setActivePanel] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { showError, showSuccess } = useNotification();
+  const { showError } = useNotification();
 
   const loadProjects = useCallback(async () => {
     setIsLoading(true);
@@ -54,26 +59,6 @@ export default function Workspace({ currentUser }) {
 
   const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
 
-  const handleDeleteSelectedProject = useCallback(async () => {
-    if (!selectedProject || !isCreator) {
-      return;
-    }
-
-    setIsDeleting(true);
-
-    const result = await deleteProject(selectedProject.id);
-    if (!result.ok) {
-      showError(result.message || "Failed to delete project");
-      setIsDeleting(false);
-      return;
-    }
-
-    showSuccess("Project deleted.");
-    setSelectedProjectId(null);
-    await loadProjects();
-    setIsDeleting(false);
-  }, [isCreator, loadProjects, selectedProject, showError, showSuccess]);
-
   const handleProjectCreated = useCallback(
     async (projectId) => {
       await loadProjects();
@@ -89,10 +74,16 @@ export default function Workspace({ currentUser }) {
     setActivePanel("create");
   }, []);
 
+  // Opening details panel after selecting a project keeps UI state explicit.
   const handleSelectProject = useCallback((projectId) => {
     setSelectedProjectId(projectId);
     setActivePanel("details");
   }, []);
+
+  const handleProjectDeleted = useCallback(async () => {
+    setSelectedProjectId(null);
+    await loadProjects();
+  }, [loadProjects]);
 
   return (
     <main className="workspace-layout">
@@ -115,8 +106,7 @@ export default function Workspace({ currentUser }) {
         <WorkspaceDetails
           selectedProject={selectedProject}
           isCreator={isCreator}
-          isSubmitting={isDeleting}
-          onDeleteSelectedProject={handleDeleteSelectedProject}
+          onProjectDeleted={handleProjectDeleted}
         />
       )}
     </main>
