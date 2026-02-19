@@ -1,32 +1,82 @@
-export default function WorkspaceCreateProjectForm({
-  createForm,
-  onCreateChange,
-  onCreateSubmit,
-  onCancel,
-  isSubmitting,
-  todayDateString,
-}) {
+import { useMemo, useState } from "react";
+import { createProject } from "../../../services/projectApi";
+import { EMPTY_CREATE_FORM } from "../constants";
+import { toApiDateTime } from "../utils";
+import { useNotification } from "../../notification/notificationContext";
+
+export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onProjectCreated }) {
+  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError, showSuccess } = useNotification();
+
+  const todayDateString = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  const handleCreateChange = (event) => {
+    const { name, value } = event.target;
+    setCreateForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!currentUser?.userId) {
+      showError("Missing user information. Please sign in again.");
+      return;
+    }
+
+    const dueDateUtc = toApiDateTime(createForm.dueDate);
+    if (!dueDateUtc) {
+      showError("Please provide a valid due date.");
+      return;
+    }
+    if (createForm.dueDate < todayDateString) {
+      showError("Due date cannot be earlier than creation date.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const result = await createProject({
+      name: createForm.name.trim(),
+      description: createForm.description.trim(),
+      dueDateUtc,
+      createdByUserId: currentUser.userId,
+      participatingUserIds: [],
+    });
+
+    if (!result.ok) {
+      showError(result.message || "Failed to create project");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setCreateForm(EMPTY_CREATE_FORM);
+    showSuccess("Project created.");
+    await onProjectCreated(result.data?.id ?? null);
+    setIsSubmitting(false);
+  };
+
   return (
     <section className="workspace-column workspace-details">
       <article className="workspace-create-panel">
         <h2>Create project</h2>
         <p>Fill in the basic information to create a new project.</p>
 
-        <form className="create-project-form" onSubmit={onCreateSubmit}>
+        <form className="create-project-form" onSubmit={handleCreateSubmit}>
           <input
             type="text"
             name="name"
             placeholder="Project name"
             required
             value={createForm.name}
-            onChange={onCreateChange}
+            onChange={handleCreateChange}
           />
           <textarea
             name="description"
             placeholder="Description"
             required
             value={createForm.description}
-            onChange={onCreateChange}
+            onChange={handleCreateChange}
           />
           <input
             type="date"
@@ -34,7 +84,7 @@ export default function WorkspaceCreateProjectForm({
             required
             min={todayDateString}
             value={createForm.dueDate}
-            onChange={onCreateChange}
+            onChange={handleCreateChange}
           />
 
           <div className="create-project-actions">

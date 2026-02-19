@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./workspace.css";
-import {
-  createProject,
-  deleteProject,
-  fetchProjects,
-} from "../../services/projectApi";
-import { EMPTY_CREATE_FORM } from "./constants";
-import { toApiDateTime } from "./utils";
+import { deleteProject, fetchProjects } from "../../services/projectApi";
 import WorkspaceSidebar from "./components/WorkspaceSidebar";
 import WorkspaceDetails from "./components/WorkspaceDetails";
 import WorkspaceCreateProjectForm from "./components/WorkspaceCreateProjectForm";
@@ -17,11 +11,8 @@ export default function Workspace({ currentUser }) {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activePanel, setActivePanel] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { showError, showSuccess } = useNotification();
-
-  const todayDateString = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const loadProjects = useCallback(async () => {
     setIsLoading(true);
@@ -63,78 +54,36 @@ export default function Workspace({ currentUser }) {
 
   const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
 
-  const handleCreateChange = useCallback((event) => {
-    const { name, value } = event.target;
-    setCreateForm((prev) => ({ ...prev, [name]: value }));
-  }, []);
-
-  const handleCreateSubmit = useCallback(
-    async (event) => {
-      event.preventDefault();
-
-      if (!currentUser?.userId) {
-        showError("Missing user information. Please sign in again.");
-        return;
-      }
-
-      const dueDateUtc = toApiDateTime(createForm.dueDate);
-      if (!dueDateUtc) {
-        showError("Please provide a valid due date.");
-        return;
-      }
-      if (createForm.dueDate < todayDateString) {
-        showError("Due date cannot be earlier than creation date.");
-        return;
-      }
-
-      setIsSubmitting(true);
-
-      const result = await createProject({
-        name: createForm.name.trim(),
-        description: createForm.description.trim(),
-        dueDateUtc,
-        createdByUserId: currentUser.userId,
-        participatingUserIds: [],
-      });
-
-      if (!result.ok) {
-        showError(result.message || "Failed to create project");
-        setIsSubmitting(false);
-        return;
-      }
-
-      setCreateForm(EMPTY_CREATE_FORM);
-      showSuccess("Project created.");
-      await loadProjects();
-
-      if (result.data?.id) {
-        setSelectedProjectId(result.data.id);
-      }
-      setActivePanel("details");
-      setIsSubmitting(false);
-    },
-    [createForm, currentUser, loadProjects, showError, showSuccess, todayDateString]
-  );
-
   const handleDeleteSelectedProject = useCallback(async () => {
     if (!selectedProject || !isCreator) {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsDeleting(true);
 
     const result = await deleteProject(selectedProject.id);
     if (!result.ok) {
       showError(result.message || "Failed to delete project");
-      setIsSubmitting(false);
+      setIsDeleting(false);
       return;
     }
 
     showSuccess("Project deleted.");
     setSelectedProjectId(null);
     await loadProjects();
-    setIsSubmitting(false);
+    setIsDeleting(false);
   }, [isCreator, loadProjects, selectedProject, showError, showSuccess]);
+
+  const handleProjectCreated = useCallback(
+    async (projectId) => {
+      await loadProjects();
+      if (projectId) {
+        setSelectedProjectId(projectId);
+      }
+      setActivePanel("details");
+    },
+    [loadProjects]
+  );
 
   const handleStartCreateProject = useCallback(() => {
     setActivePanel("create");
@@ -158,18 +107,15 @@ export default function Workspace({ currentUser }) {
       {/* Right side switches between create form and project details */}
       {activePanel === "create" ? (
         <WorkspaceCreateProjectForm
-          createForm={createForm}
-          onCreateChange={handleCreateChange}
-          onCreateSubmit={handleCreateSubmit}
+          currentUser={currentUser}
+          onProjectCreated={handleProjectCreated}
           onCancel={() => setActivePanel("details")}
-          isSubmitting={isSubmitting}
-          todayDateString={todayDateString}
         />
       ) : (
         <WorkspaceDetails
           selectedProject={selectedProject}
           isCreator={isCreator}
-          isSubmitting={isSubmitting}
+          isSubmitting={isDeleting}
           onDeleteSelectedProject={handleDeleteSelectedProject}
         />
       )}
