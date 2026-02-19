@@ -2,7 +2,7 @@ import Input from "../input/Input";
 import Form from "../form/Form";
 import { useState } from "react";
 import { submitAuthRequest } from "../../services/authApi";
-import Notification from "../notification/Notification";
+import { useNotification } from "../notification/notificationContext";
 /**
  * SignIn component that renders a sign-in form for existing users.
  * This component uses the Form and Input components to create a structured form layout.
@@ -13,7 +13,7 @@ function SignIn({ onAuthSuccess = () => {} }) {
     email: "",
     password: "",
   });
-  const [notification, setNotification] = useState(null);
+  const { showError } = useNotification();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,45 +32,35 @@ function SignIn({ onAuthSuccess = () => {} }) {
       return;
     }
 
-    setNotification({ type: "error", message: result.message || "Sign in failed" });
+    showError(result.message || "Sign in failed");
   };
 
   return (
-    <>
-      {notification && (
-        <Notification
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
-      )}
+    <Form className="form-card" onSubmit={handleSubmit}>
+      <h2 className="form-title">Sign In Page</h2>
 
-      <Form className="form-card" onSubmit={handleSubmit}>
-        <h2 className="form-title">Sign In Page</h2>
+      <Input
+        type="email"
+        id="email"
+        name="email"
+        required
+        autoComplete="email"
+        onChange={handleChange}
+      >
+        Email:
+      </Input>
 
-        <Input
-          type="email"
-          id="email"
-          name="email"
-          required
-          autoComplete="email"
-          onChange={handleChange}
-        >
-          Email:
-        </Input>
-
-        <Input
-          type="password"
-          id="password"
-          name="password"
-          required
-          autoComplete="current-password"
-          onChange={handleChange}
-        >
-          Password:
-        </Input>
-      </Form>
-    </>
+      <Input
+        type="password"
+        id="password"
+        name="password"
+        required
+        autoComplete="current-password"
+        onChange={handleChange}
+      >
+        Password:
+      </Input>
+    </Form>
   );
 }
 

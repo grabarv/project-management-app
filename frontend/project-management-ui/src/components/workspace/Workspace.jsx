@@ -10,28 +10,26 @@ import { toApiDateTime } from "./utils";
 import WorkspaceSidebar from "./components/WorkspaceSidebar";
 import WorkspaceDetails from "./components/WorkspaceDetails";
 import WorkspaceCreateProjectForm from "./components/WorkspaceCreateProjectForm";
+import { useNotification } from "../notification/notificationContext";
 
 export default function Workspace({ currentUser }) {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activePanel, setActivePanel] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [actionError, setActionError] = useState("");
-  const [actionInfo, setActionInfo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
+  const { showError, showSuccess } = useNotification();
 
   const todayDateString = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const loadProjects = useCallback(async () => {
     setIsLoading(true);
-    setErrorMessage("");
 
     const result = await fetchProjects();
     if (!result.ok) {
       setProjects([]);
-      setErrorMessage(result.message);
+      showError(result.message || "Failed to load projects");
       setIsLoading(false);
       return false;
     }
@@ -39,7 +37,7 @@ export default function Workspace({ currentUser }) {
     setProjects(result.data);
     setIsLoading(false);
     return true;
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -75,23 +73,21 @@ export default function Workspace({ currentUser }) {
       event.preventDefault();
 
       if (!currentUser?.userId) {
-        setActionError("Missing user information. Please sign in again.");
+        showError("Missing user information. Please sign in again.");
         return;
       }
 
       const dueDateUtc = toApiDateTime(createForm.dueDate);
       if (!dueDateUtc) {
-        setActionError("Please provide a valid due date.");
+        showError("Please provide a valid due date.");
         return;
       }
       if (createForm.dueDate < todayDateString) {
-        setActionError("Due date cannot be earlier than creation date.");
+        showError("Due date cannot be earlier than creation date.");
         return;
       }
 
       setIsSubmitting(true);
-      setActionError("");
-      setActionInfo("");
 
       const result = await createProject({
         name: createForm.name.trim(),
@@ -102,13 +98,13 @@ export default function Workspace({ currentUser }) {
       });
 
       if (!result.ok) {
-        setActionError(result.message);
+        showError(result.message || "Failed to create project");
         setIsSubmitting(false);
         return;
       }
 
       setCreateForm(EMPTY_CREATE_FORM);
-      setActionInfo("Project created.");
+      showSuccess("Project created.");
       await loadProjects();
 
       if (result.data?.id) {
@@ -117,7 +113,7 @@ export default function Workspace({ currentUser }) {
       setActivePanel("details");
       setIsSubmitting(false);
     },
-    [createForm, currentUser, loadProjects, todayDateString]
+    [createForm, currentUser, loadProjects, showError, showSuccess, todayDateString]
   );
 
   const handleDeleteSelectedProject = useCallback(async () => {
@@ -126,26 +122,22 @@ export default function Workspace({ currentUser }) {
     }
 
     setIsSubmitting(true);
-    setActionError("");
-    setActionInfo("");
 
     const result = await deleteProject(selectedProject.id);
     if (!result.ok) {
-      setActionError(result.message);
+      showError(result.message || "Failed to delete project");
       setIsSubmitting(false);
       return;
     }
 
-    setActionInfo("Project deleted.");
+    showSuccess("Project deleted.");
     setSelectedProjectId(null);
     await loadProjects();
     setIsSubmitting(false);
-  }, [isCreator, loadProjects, selectedProject]);
+  }, [isCreator, loadProjects, selectedProject, showError, showSuccess]);
 
   const handleStartCreateProject = useCallback(() => {
     setActivePanel("create");
-    setActionError("");
-    setActionInfo("");
   }, []);
 
   const handleSelectProject = useCallback((projectId) => {
@@ -159,9 +151,6 @@ export default function Workspace({ currentUser }) {
         currentUser={currentUser}
         onStartCreateProject={handleStartCreateProject}
         isLoading={isLoading}
-        errorMessage={errorMessage}
-        actionError={actionError}
-        actionInfo={actionInfo}
         userProjects={userProjects}
         selectedProjectId={selectedProjectId}
         onSelectProject={handleSelectProject}
