@@ -28,9 +28,7 @@ export default function WorkspaceSidebar({
             <li key={project.id}>
               <button
                 type="button"
-                className={`project-item ${
-                  selectedProjectId === project.id ? "selected" : ""
-                }`}
+                className={`project-item ${selectedProjectId === project.id ? "selected" : ""}`}
                 onClick={() => onSelectProject(project.id)}
               >
                 {project.name}
