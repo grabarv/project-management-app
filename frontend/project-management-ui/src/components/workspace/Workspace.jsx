@@ -4,6 +4,7 @@ import { fetchProjects } from "../../services/projectApi";
 import WorkspaceSidebar from "./components/WorkspaceSidebar";
 import WorkspaceDetails from "./components/WorkspaceDetails";
 import WorkspaceCreateProjectForm from "./components/WorkspaceCreateProjectForm";
+import WorkspaceUpdateProjectForm from "./components/WorkspaceUpdateProjectForm";
 import { useNotification } from "../notification/notificationContext";
 
 /**
@@ -80,6 +81,14 @@ export default function Workspace({ currentUser }) {
     setActivePanel("create");
   }, []);
 
+  const handleStartUpdateProject = useCallback(() => {
+    if (!selectedProject) {
+      return;
+    }
+
+    setActivePanel("edit");
+  }, [selectedProject]);
+
   // Opening details panel after selecting a project keeps UI state explicit.
   const handleSelectProject = useCallback((projectId) => {
     setSelectedProjectId(projectId);
@@ -91,6 +100,17 @@ export default function Workspace({ currentUser }) {
     await loadProjects();
   }, [loadProjects]);
 
+  const handleProjectUpdated = useCallback(
+    async (projectId) => {
+      await loadProjects();
+      if (projectId) {
+        setSelectedProjectId(projectId);
+      }
+      setActivePanel("details");
+    },
+    [loadProjects]
+  );
+
   return (
     <main className="workspace-layout">
       <WorkspaceSidebar
@@ -101,11 +121,18 @@ export default function Workspace({ currentUser }) {
         selectedProjectId={selectedProjectId}
         onSelectProject={handleSelectProject}
       />
-      {/* Right side switches between create form and project details */}
+      {/* Right side switches between create, edit and details views */}
       {activePanel === "create" ? (
         <WorkspaceCreateProjectForm
           currentUser={currentUser}
           onProjectCreated={handleProjectCreated}
+          onCancel={() => setActivePanel("details")}
+        />
+      ) : activePanel === "edit" && selectedProject ? (
+        <WorkspaceUpdateProjectForm
+          currentUser={currentUser}
+          selectedProject={selectedProject}
+          onProjectUpdated={handleProjectUpdated}
           onCancel={() => setActivePanel("details")}
         />
       ) : (
@@ -114,6 +141,7 @@ export default function Workspace({ currentUser }) {
           selectedProject={selectedProject}
           isCreator={isCreator}
           onProjectDeleted={handleProjectDeleted}
+          onStartUpdateProject={handleStartUpdateProject}
         />
       )}
     </main>

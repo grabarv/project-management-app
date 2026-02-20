@@ -10,6 +10,7 @@ export default function WorkspaceDetails({
   selectedProject,
   isCreator,
   onProjectDeleted,
+  onStartUpdateProject,
 }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -26,6 +27,9 @@ export default function WorkspaceDetails({
             <strong>Due:</strong> {formatDate(selectedProject.dueDateUtc)}
           </p>
           <div className="project-actions">
+            <button type="button" className="neutral" onClick={onStartUpdateProject}>
+              Update project
+            </button>
             {isCreator ? (
               <button
                 type="button"
