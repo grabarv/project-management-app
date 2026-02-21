@@ -10,4 +10,5 @@ public class AppUser
 
     public ICollection<AppProject> CreatedProjects { get; set; } = new List<AppProject>();
     public ICollection<AppProject> ParticipatingProjects { get; set; } = new List<AppProject>();
+    public ICollection<AppTask> AssignedTasks { get; set; } = new List<AppTask>();
 }
