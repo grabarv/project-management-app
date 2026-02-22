@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using ProjectManagement.Api.Data;
 using ProjectManagement.Api.Endpoints;
 using ProjectManagement.Api.Models;
+using AppTaskStatus = ProjectManagement.Api.Models.TaskStatus;
 
 namespace ProjectManagement.Api.Extensions;
 
@@ -150,6 +151,7 @@ public static class WebApplicationExtensions
             {
                 Name = "Create wireframes",
                 Description = "Prepare initial layout wireframes for desktop and mobile.",
+                Status = AppTaskStatus.InProgress.ToString(),
                 CreatedAtUtc = now,
                 DueDateUtc = now.AddDays(5),
                 ProjectId = websiteRedesign.Id,
@@ -159,6 +161,7 @@ public static class WebApplicationExtensions
             {
                 Name = "Review color palette",
                 Description = "Validate brand colors and accessibility contrast.",
+                Status = AppTaskStatus.Pending.ToString(),
                 CreatedAtUtc = now,
                 DueDateUtc = now.AddDays(7),
                 ProjectId = websiteRedesign.Id,
@@ -168,6 +171,7 @@ public static class WebApplicationExtensions
             {
                 Name = "Unify error responses",
                 Description = "Return consistent JSON payloads for 4xx/5xx responses.",
+                Status = AppTaskStatus.Pending.ToString(),
                 CreatedAtUtc = now,
                 DueDateUtc = now.AddDays(4),
                 ProjectId = apiCleanup.Id,

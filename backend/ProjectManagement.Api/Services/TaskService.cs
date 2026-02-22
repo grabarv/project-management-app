@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Api.Contracts.Tasks;
 using ProjectManagement.Api.Data;
 using ProjectManagement.Api.Models;
+using AppTaskStatus = ProjectManagement.Api.Models.TaskStatus;
 
 namespace ProjectManagement.Api.Services;
 
@@ -79,6 +80,11 @@ public sealed class TaskService(AppDbContext db) : ITaskService
                 "AssignedToUserId must be the project creator or a project participant");
         }
 
+        if (!TryNormalizeStatus(request.Status, out var normalizedStatus))
+        {
+            return OperationResult<TaskResponse>.Fail(400, "Task status is invalid");
+        }
+
         var dueDateUtc = EnsureUtc(request.DueDateUtc);
         var createdAtUtc = DateTime.UtcNow;
         // Task due date is a calendar-day input in UI (same convention as projects).
@@ -91,6 +97,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         {
             Name = request.Name.Trim(),
             Description = request.Description.Trim(),
+            Status = normalizedStatus,
             CreatedAtUtc = createdAtUtc,
             DueDateUtc = dueDateUtc,
             ProjectId = project.Id,
@@ -135,6 +142,11 @@ public sealed class TaskService(AppDbContext db) : ITaskService
                 "AssignedToUserId must be the project creator or a project participant");
         }
 
+        if (!TryNormalizeStatus(request.Status, out var normalizedStatus))
+        {
+            return OperationResult<TaskResponse>.Fail(400, "Task status is invalid");
+        }
+
         var dueDateUtc = EnsureUtc(request.DueDateUtc);
         if (dueDateUtc.Date < task.CreatedAtUtc.Date)
         {
@@ -143,6 +155,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
 
         task.Name = request.Name.Trim();
         task.Description = request.Description.Trim();
+        task.Status = normalizedStatus;
         task.DueDateUtc = dueDateUtc;
         task.AssignedToUserId = request.AssignedToUserId;
 
@@ -186,6 +199,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             task.Id,
             task.Name,
             task.Description,
+            task.Status,
             task.CreatedAtUtc,
             task.DueDateUtc,
             task.ProjectId,
@@ -209,5 +223,18 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         return dateTime.Kind == DateTimeKind.Utc
             ? dateTime
             : dateTime.ToUniversalTime();
+    }
+
+    private static bool TryNormalizeStatus(string rawStatus, out string normalizedStatus)
+    {
+        normalizedStatus = string.Empty;
+
+        if (!Enum.TryParse<AppTaskStatus>(rawStatus, ignoreCase: true, out var parsedStatus))
+        {
+            return false;
+        }
+
+        normalizedStatus = parsedStatus.ToString();
+        return true;
     }
 }

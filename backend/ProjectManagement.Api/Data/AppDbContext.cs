@@ -62,6 +62,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsRequired()
             .HasMaxLength(1000);
 
+        modelBuilder.Entity<AppTask>()
+            .Property(task => task.Status)
+            .IsRequired()
+            .HasMaxLength(50);
+
         modelBuilder.Entity<AppProject>()
             .HasOne(project => project.CreatedByUser)
             .WithMany(user => user.CreatedProjects)

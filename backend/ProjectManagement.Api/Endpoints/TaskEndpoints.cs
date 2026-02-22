@@ -121,6 +121,12 @@ public static class TaskEndpoints
             return Results.BadRequest(new { message = "Task description is required" });
         }
 
+        if (string.IsNullOrWhiteSpace(request.Status))
+        {
+            return Results.BadRequest(new { message = "Task status is required" });
+        }
+        // Allowed values are enforced in the service through TaskStatus enum parsing.
+
         if (request.AssignedToUserId <= 0)
         {
             return Results.BadRequest(new { message = "AssignedToUserId is required" });
@@ -140,6 +146,12 @@ public static class TaskEndpoints
         {
             return Results.BadRequest(new { message = "Task description is required" });
         }
+
+        if (string.IsNullOrWhiteSpace(request.Status))
+        {
+            return Results.BadRequest(new { message = "Task status is required" });
+        }
+        // Allowed values are enforced in the service through TaskStatus enum parsing.
 
         if (request.AssignedToUserId <= 0)
         {

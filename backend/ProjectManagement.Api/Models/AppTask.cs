@@ -5,6 +5,7 @@ public class AppTask
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
+    public required string Status { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime DueDateUtc { get; set; }
 
