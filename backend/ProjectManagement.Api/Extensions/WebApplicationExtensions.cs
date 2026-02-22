@@ -40,6 +40,7 @@ public static class WebApplicationExtensions
     {
         app.MapAuthEndpoints();
         app.MapProjectEndpoints();
+        app.MapTaskEndpoints();
         return app;
     }
 }
