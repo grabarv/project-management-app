@@ -264,6 +264,10 @@
 
 .project-actions {
   margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .project-actions button {
@@ -289,6 +293,92 @@
 .project-actions button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.project-tasks-panel {
+  margin-top: 24px;
+  border: 1px solid #dfe7f2;
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px;
+}
+
+.project-tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.project-tasks-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.project-tasks-header span {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf2fb;
+  color: #385276;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.tasks-table-wrap {
+  overflow-x: auto;
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.tasks-table th,
+.tasks-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid #e7edf6;
+  font-size: 0.92rem;
+}
+
+.tasks-table th {
+  color: #4a607b;
+  font-weight: 600;
+}
+
+.tasks-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #edf2fb;
+  color: #385276;
+}
+
+.task-status.status-pending {
+  background: #fff3d8;
+  color: #8a5a00;
+}
+
+.task-status.status-inprogress {
+  background: #dff0ff;
+  color: #0d5ea8;
+}
+
+.task-status.status-completed {
+  background: #def3e4;
+  color: #1f6a39;
 }
 
 .workspace-empty-state {

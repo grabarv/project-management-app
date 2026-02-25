@@ -21,7 +21,7 @@ export default function WorkspaceSidebar({
   return (
     <section className="workspace-column workspace-sidebar">
       <div className="workspace-header">
-        <h2>Projects</h2>
+        <h2>My projects</h2>
         <p>{currentUser?.username || "User"}</p>
       </div>
 

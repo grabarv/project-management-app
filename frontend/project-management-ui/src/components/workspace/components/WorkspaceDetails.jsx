@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { formatDate } from "../utils";
 import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
+import ProjectTasksTable from "./ProjectTasksTable";
 
 /**
  * Right-side project details view with creator-only delete action.
@@ -46,6 +47,7 @@ export default function WorkspaceDetails({
               </p>
             )}
           </div>
+          <ProjectTasksTable currentUser={currentUser} selectedProject={selectedProject} />
         </article>
       ) : (
         <div className="workspace-empty-state">
