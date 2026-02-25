@@ -27,20 +27,22 @@ export default function WorkspaceDetails({
             <strong>Due:</strong> {formatDate(selectedProject.dueDateUtc)}
           </p>
           <div className="project-actions">
-            <button type="button" className="neutral" onClick={onStartUpdateProject}>
-              Update project
-            </button>
             {isCreator ? (
-              <button
-                type="button"
-                className="danger"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                Delete project
-              </button>
+              <>
+                <button type="button" className="neutral" onClick={onStartUpdateProject}>
+                  Update project
+                </button>
+                <button
+                  type="button"
+                  className="danger"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  Delete project
+                </button>
+              </>
             ) : (
               <p className="workspace-info">
-                You are a participant in this project.
+                You are a participant in this project and cannot update it.
               </p>
             )}
           </div>

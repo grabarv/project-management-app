@@ -82,12 +82,12 @@ export default function Workspace({ currentUser }) {
   }, []);
 
   const handleStartUpdateProject = useCallback(() => {
-    if (!selectedProject) {
+    if (!selectedProject || !isCreator) {
       return;
     }
 
     setActivePanel("edit");
-  }, [selectedProject]);
+  }, [isCreator, selectedProject]);
 
   // Opening details panel after selecting a project keeps UI state explicit.
   const handleSelectProject = useCallback((projectId) => {
