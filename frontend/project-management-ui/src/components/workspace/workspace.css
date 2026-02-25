@@ -147,6 +147,44 @@
   gap: 8px;
 }
 
+.project-groups {
+  display: grid;
+  gap: 14px;
+}
+
+.project-group {
+  border: 1px solid #dfe7f2;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fbfcff;
+}
+
+.project-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.project-group-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #415873;
+}
+
+.project-group-header span {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf2fb;
+  color: #385276;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .project-item {
   width: 100%;
   border: 1px solid #d7deea;
@@ -157,11 +195,57 @@
   padding: 10px 12px;
   cursor: pointer;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .project-item.selected {
   border-color: #1f78ff;
   background: #e9f2ff;
+}
+
+.project-item-owned {
+  background: #eef8f1;
+  border-color: #cae8d2;
+}
+
+.project-item-owned.selected {
+  background: #dcf2e4;
+  border-color: #4ea970;
+}
+
+.project-item-participating {
+  background: #f8fafe;
+  border-color: #d7deea;
+}
+
+.project-item-participating.selected {
+  background: #edf3ff;
+  border-color: #6a95df;
+}
+
+.project-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-item-badge {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: #e7edf8;
+  color: #355277;
+}
+
+.project-item-owned .project-item-badge {
+  background: #d8efdf;
+  color: #21663a;
 }
 
 .workspace-details {

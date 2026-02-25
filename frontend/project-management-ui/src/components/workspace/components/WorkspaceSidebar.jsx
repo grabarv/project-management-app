@@ -1,3 +1,5 @@
+import WorkspaceProjectGroup from "./WorkspaceProjectGroup";
+
 /**
  * Left-side project navigation panel.
  */
@@ -9,6 +11,13 @@ export default function WorkspaceSidebar({
   selectedProjectId,
   onSelectProject,
 }) {
+  const createdProjects = userProjects.filter(
+    (project) => project.createdByUserId === currentUser?.userId
+  );
+  const participatingProjects = userProjects.filter(
+    (project) => project.createdByUserId !== currentUser?.userId
+  );
+
   return (
     <section className="workspace-column workspace-sidebar">
       <div className="workspace-header">
@@ -26,19 +35,24 @@ export default function WorkspaceSidebar({
       )}
 
       {!isLoading && userProjects.length > 0 && (
-        <ul className="project-list">
-          {userProjects.map((project) => (
-            <li key={project.id}>
-              <button
-                type="button"
-                className={`project-item ${selectedProjectId === project.id ? "selected" : ""}`}
-                onClick={() => onSelectProject(project.id)}
-              >
-                {project.name}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="project-groups">
+          <WorkspaceProjectGroup
+            title="Created by you"
+            projects={createdProjects}
+            itemClassName="project-item-owned"
+            badgeLabel="Owner"
+            selectedProjectId={selectedProjectId}
+            onSelectProject={onSelectProject}
+          />
+          <WorkspaceProjectGroup
+            title="Participating"
+            projects={participatingProjects}
+            itemClassName="project-item-participating"
+            badgeLabel="Member"
+            selectedProjectId={selectedProjectId}
+            onSelectProject={onSelectProject}
+          />
+        </div>
       )}
     </section>
   );
