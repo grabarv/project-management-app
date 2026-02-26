@@ -102,7 +102,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
                       {task.status}
                     </span>
                   </td>
-                  {showAssignedTo && <td>User #{task.assignedToUserId}</td>}
+                  {showAssignedTo && <td>{task.assignedToUsername || `User #${task.assignedToUserId}`}</td>}
                   <td>{formatDate(task.dueDateUtc)}</td>
                 </tr>
               ))}

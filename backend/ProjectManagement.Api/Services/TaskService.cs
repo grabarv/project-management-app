@@ -30,7 +30,16 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             .Where(task => task.ProjectId == projectId)
             .OrderBy(task => task.DueDateUtc)
             .ThenBy(task => task.Id)
-            .Select(task => ToResponse(task))
+            .Select(task => new TaskResponse(
+                task.Id,
+                task.Name,
+                task.Description,
+                task.Status,
+                task.CreatedAtUtc,
+                task.DueDateUtc,
+                task.ProjectId,
+                task.AssignedToUserId,
+                task.AssignedToUser.Username))
             .ToListAsync();
 
         return OperationResult<IReadOnlyList<TaskResponse>>.Ok(tasks);
@@ -40,6 +49,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
     {
         var task = await db.Tasks
             .AsNoTracking()
+            .Include(t => t.AssignedToUser)
             .Include(t => t.Project)
                 .ThenInclude(p => p.ParticipatingUsers)
             .FirstOrDefaultAsync(t => t.Id == id);
@@ -115,7 +125,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             return OperationResult<TaskResponse>.Fail(400, exception.Message);
         }
 
-        return OperationResult<TaskResponse>.Created(ToResponse(task));
+        var assignedToUsername = await GetAssignedUserNameAsync(task.AssignedToUserId);
+        return OperationResult<TaskResponse>.Created(ToResponse(task, assignedToUsername));
     }
 
     public async Task<OperationResult<TaskResponse>> UpdateAsync(int id, UpdateTaskRequest request, int currentUserId)
@@ -168,7 +179,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             return OperationResult<TaskResponse>.Fail(400, exception.Message);
         }
 
-        return OperationResult<TaskResponse>.Ok(ToResponse(task));
+        var assignedToUsername = await GetAssignedUserNameAsync(task.AssignedToUserId);
+        return OperationResult<TaskResponse>.Ok(ToResponse(task, assignedToUsername));
     }
 
     public async Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId)
@@ -203,7 +215,22 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             task.CreatedAtUtc,
             task.DueDateUtc,
             task.ProjectId,
-            task.AssignedToUserId);
+            task.AssignedToUserId,
+            task.AssignedToUser.Username);
+    }
+
+    private static TaskResponse ToResponse(AppTask task, string assignedToUsername)
+    {
+        return new TaskResponse(
+            task.Id,
+            task.Name,
+            task.Description,
+            task.Status,
+            task.CreatedAtUtc,
+            task.DueDateUtc,
+            task.ProjectId,
+            task.AssignedToUserId,
+            assignedToUsername);
     }
 
     private static bool CanAccessProject(AppProject project, int currentUserId)
@@ -236,5 +263,14 @@ public sealed class TaskService(AppDbContext db) : ITaskService
 
         normalizedStatus = parsedStatus.ToString();
         return true;
+    }
+
+    private async Task<string> GetAssignedUserNameAsync(int userId)
+    {
+        return await db.Users
+            .AsNoTracking()
+            .Where(user => user.Id == userId)
+            .Select(user => user.Username)
+            .FirstAsync();
     }
 }

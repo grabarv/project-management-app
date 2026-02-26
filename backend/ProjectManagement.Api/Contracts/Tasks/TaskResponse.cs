@@ -8,4 +8,5 @@ public record TaskResponse(
     DateTime CreatedAtUtc,
     DateTime DueDateUtc,
     int ProjectId,
-    int AssignedToUserId);
+    int AssignedToUserId,
+    string AssignedToUsername);
