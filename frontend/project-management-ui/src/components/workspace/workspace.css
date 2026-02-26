@@ -303,6 +303,11 @@
   padding: 14px;
 }
 
+.project-tasks-panel-secondary {
+  background: #fbfcff;
+  border-color: #d8e2f0;
+}
+
 .project-tasks-header {
   display: flex;
   align-items: center;

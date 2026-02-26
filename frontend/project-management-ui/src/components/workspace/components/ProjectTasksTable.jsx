@@ -58,32 +58,43 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
     return tasks.filter((task) => task.assignedToUserId === currentUser.userId);
   }, [tasks, currentUser]);
 
-  return (
-    <section className="project-tasks-panel">
+  const otherUsersTasks = useMemo(() => {
+    if (!currentUser?.userId) {
+      return [];
+    }
+
+    return tasks.filter((task) => task.assignedToUserId !== currentUser.userId);
+  }, [tasks, currentUser]);
+
+  const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
+
+  const renderTaskTable = ({ title, rows, emptyMessage, showAssignedTo = false, panelClassName = "" }) => (
+    <section className={`project-tasks-panel ${panelClassName}`.trim()}>
       <div className="project-tasks-header">
-        <h3>My Tasks</h3>
-        {!isLoading && !errorMessage && <span>{myTasks.length}</span>}
+        <h3>{title}</h3>
+        {!isLoading && !errorMessage && <span>{rows.length}</span>}
       </div>
 
       {isLoading && <p className="workspace-info">Loading tasks...</p>}
       {!isLoading && errorMessage && <p className="workspace-error">{errorMessage}</p>}
 
-      {!isLoading && !errorMessage && myTasks.length === 0 && (
-        <p className="workspace-info">No tasks assigned to you in this project.</p>
+      {!isLoading && !errorMessage && rows.length === 0 && (
+        <p className="workspace-info">{emptyMessage}</p>
       )}
 
-      {!isLoading && !errorMessage && myTasks.length > 0 && (
+      {!isLoading && !errorMessage && rows.length > 0 && (
         <div className="tasks-table-wrap">
           <table className="tasks-table">
             <thead>
               <tr>
                 <th>Task</th>
                 <th>Status</th>
+                {showAssignedTo && <th>Assigned To</th>}
                 <th>Due Date</th>
               </tr>
             </thead>
             <tbody>
-              {myTasks.map((task) => (
+              {rows.map((task) => (
                 <tr key={task.id}>
                   <td>{task.name}</td>
                   <td>
@@ -91,6 +102,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
                       {task.status}
                     </span>
                   </td>
+                  {showAssignedTo && <td>User #{task.assignedToUserId}</td>}
                   <td>{formatDate(task.dueDateUtc)}</td>
                 </tr>
               ))}
@@ -99,5 +111,24 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
         </div>
       )}
     </section>
+  );
+
+  return (
+    <>
+      {renderTaskTable({
+        title: "My Tasks",
+        rows: myTasks,
+        emptyMessage: "No tasks assigned to you in this project.",
+      })}
+
+      {isCreator &&
+        renderTaskTable({
+          title: "Others' Tasks",
+          rows: otherUsersTasks,
+          emptyMessage: "No tasks are assigned to other users in this project.",
+          showAssignedTo: true,
+          panelClassName: "project-tasks-panel-secondary",
+        })}
+    </>
   );
 }
