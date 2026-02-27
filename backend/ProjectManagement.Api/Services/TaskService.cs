@@ -39,7 +39,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
                 task.DueDateUtc,
                 task.ProjectId,
                 task.AssignedToUserId,
-                task.AssignedToUser.Username))
+                task.AssignedToUser.Username,
+                task.Project.CreatedByUser.Username))
             .ToListAsync();
 
         return OperationResult<IReadOnlyList<TaskResponse>>.Ok(tasks);
@@ -50,6 +51,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         var task = await db.Tasks
             .AsNoTracking()
             .Include(t => t.AssignedToUser)
+            .Include(t => t.Project)
+                .ThenInclude(p => p.CreatedByUser)
             .Include(t => t.Project)
                 .ThenInclude(p => p.ParticipatingUsers)
             .FirstOrDefaultAsync(t => t.Id == id);
@@ -70,6 +73,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
     public async Task<OperationResult<TaskResponse>> CreateAsync(int projectId, CreateTaskRequest request, int currentUserId)
     {
         var project = await db.Projects
+            .Include(p => p.CreatedByUser)
             .Include(p => p.ParticipatingUsers)
             .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -126,12 +130,15 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         }
 
         var assignedToUsername = await GetAssignedUserNameAsync(task.AssignedToUserId);
-        return OperationResult<TaskResponse>.Created(ToResponse(task, assignedToUsername));
+        return OperationResult<TaskResponse>.Created(
+            ToResponse(task, assignedToUsername, project.CreatedByUser.Username));
     }
 
     public async Task<OperationResult<TaskResponse>> UpdateAsync(int id, UpdateTaskRequest request, int currentUserId)
     {
         var task = await db.Tasks
+            .Include(t => t.Project)
+                .ThenInclude(p => p.CreatedByUser)
             .Include(t => t.Project)
                 .ThenInclude(p => p.ParticipatingUsers)
             .FirstOrDefaultAsync(t => t.Id == id);
@@ -180,7 +187,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         }
 
         var assignedToUsername = await GetAssignedUserNameAsync(task.AssignedToUserId);
-        return OperationResult<TaskResponse>.Ok(ToResponse(task, assignedToUsername));
+        return OperationResult<TaskResponse>.Ok(
+            ToResponse(task, assignedToUsername, task.Project.CreatedByUser.Username));
     }
 
     public async Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId)
@@ -216,10 +224,14 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             task.DueDateUtc,
             task.ProjectId,
             task.AssignedToUserId,
-            task.AssignedToUser.Username);
+            task.AssignedToUser.Username,
+            task.Project.CreatedByUser.Username);
     }
 
-    private static TaskResponse ToResponse(AppTask task, string assignedToUsername)
+    private static TaskResponse ToResponse(
+        AppTask task,
+        string assignedToUsername,
+        string assignedByUsername)
     {
         return new TaskResponse(
             task.Id,
@@ -230,7 +242,8 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             task.DueDateUtc,
             task.ProjectId,
             task.AssignedToUserId,
-            assignedToUsername);
+            assignedToUsername,
+            assignedByUsername);
     }
 
     private static bool CanAccessProject(AppProject project, int currentUserId)

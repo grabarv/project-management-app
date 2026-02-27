@@ -89,6 +89,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
               <tr>
                 <th>Task</th>
                 <th>Status</th>
+                {title === "My Tasks" && <th>Assigned By</th>}
                 {showAssignedTo && <th>Assigned To</th>}
                 <th>Due Date</th>
               </tr>
@@ -102,6 +103,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
                       {task.status}
                     </span>
                   </td>
+                  {title === "My Tasks" && <td>{task.assignedByUsername || "Unknown"}</td>}
                   {showAssignedTo && <td>{task.assignedToUsername || `User #${task.assignedToUserId}`}</td>}
                   <td>{formatDate(task.dueDateUtc)}</td>
                 </tr>
