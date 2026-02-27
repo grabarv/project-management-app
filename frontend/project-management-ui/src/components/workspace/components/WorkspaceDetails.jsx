@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDate } from "../utils";
 import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
 import ProjectTasksTable from "./ProjectTasksTable";
+import TaskDetailsDrawer from "./TaskDetailsDrawer";
 
 /**
  * Right-side project details view with creator-only delete action.
@@ -14,41 +15,54 @@ export default function WorkspaceDetails({
   onStartUpdateProject,
 }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  useEffect(() => {
+    setSelectedTask(null);
+  }, [selectedProject?.id]);
 
   return (
     <section className="workspace-column workspace-details">
       {selectedProject ? (
-        <article>
-          <h2>{selectedProject.name}</h2>
-          <p className="project-description">{selectedProject.description}</p>
-          <p>
-            <strong>Created:</strong> {formatDate(selectedProject.createdAtUtc)}
-          </p>
-          <p>
-            <strong>Due:</strong> {formatDate(selectedProject.dueDateUtc)}
-          </p>
-          <div className="project-actions">
-            {isCreator ? (
-              <>
-                <button type="button" className="neutral" onClick={onStartUpdateProject}>
-                  Update project
-                </button>
-                <button
-                  type="button"
-                  className="danger"
-                  onClick={() => setIsDeleteModalOpen(true)}
-                >
-                  Delete project
-                </button>
-              </>
-            ) : (
-              <p className="workspace-info">
-                You are a participant in this project and cannot update it.
-              </p>
-            )}
-          </div>
-          <ProjectTasksTable currentUser={currentUser} selectedProject={selectedProject} />
-        </article>
+        selectedTask ? (
+          <TaskDetailsDrawer task={selectedTask} onClose={() => setSelectedTask(null)} />
+        ) : (
+          <article>
+            <h2>{selectedProject.name}</h2>
+            <p className="project-description">{selectedProject.description}</p>
+            <p>
+              <strong>Created:</strong> {formatDate(selectedProject.createdAtUtc)}
+            </p>
+            <p>
+              <strong>Due:</strong> {formatDate(selectedProject.dueDateUtc)}
+            </p>
+            <div className="project-actions">
+              {isCreator ? (
+                <>
+                  <button type="button" className="neutral" onClick={onStartUpdateProject}>
+                    Update project
+                  </button>
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                  >
+                    Delete project
+                  </button>
+                </>
+              ) : (
+                <p className="workspace-info">
+                  You are a participant in this project and cannot update it.
+                </p>
+              )}
+            </div>
+            <ProjectTasksTable
+              currentUser={currentUser}
+              selectedProject={selectedProject}
+              onTaskSelect={setSelectedTask}
+            />
+          </article>
+        )
       ) : (
         <div className="workspace-empty-state">
           <h2>Select a project</h2>

@@ -5,7 +5,7 @@ import { fetchProjectTasks } from "../../../services/taskApi";
 /**
  * Read-only task table shown under selected project details.
  */
-export default function ProjectTasksTable({ currentUser, selectedProject }) {
+export default function ProjectTasksTable({ currentUser, selectedProject, onTaskSelect }) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -68,7 +68,14 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
 
   const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
 
-  const renderTaskTable = ({ title, rows, emptyMessage, showAssignedTo = false, panelClassName = "" }) => (
+  const renderTaskTable = ({
+    title,
+    rows,
+    emptyMessage,
+    showAssignedTo = false,
+    panelClassName = "",
+    onTaskSelect,
+  }) => (
     <section className={`project-tasks-panel ${panelClassName}`.trim()}>
       <div className="project-tasks-header">
         <h3>{title}</h3>
@@ -96,7 +103,17 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
             </thead>
             <tbody>
               {rows.map((task) => (
-                <tr key={task.id}>
+                <tr
+                  key={task.id}
+                  className="task-row-clickable"
+                  onClick={() => onTaskSelect?.(task)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      onTaskSelect?.(task);
+                    }
+                  }}
+                  tabIndex={0}
+                >
                   <td>{task.name}</td>
                   <td>
                     <span className={`task-status status-${String(task.status).toLowerCase()}`}>
@@ -121,6 +138,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
         title: "My Tasks",
         rows: myTasks,
         emptyMessage: "No tasks assigned to you in this project.",
+        onTaskSelect,
       })}
 
       {isCreator &&
@@ -130,6 +148,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject }) {
           emptyMessage: "No tasks are assigned to other users in this project.",
           showAssignedTo: true,
           panelClassName: "project-tasks-panel-secondary",
+          onTaskSelect,
         })}
     </>
   );
