@@ -166,7 +166,11 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             project.CreatedAtUtc,
             project.DueDateUtc,
             project.CreatedByUserId,
-            project.ParticipatingUsers.Select(user => user.Id).ToList());
+            project.ParticipatingUsers.Select(user => user.Id).ToList(),
+            project.ParticipatingUsers
+                .OrderBy(user => user.Username)
+                .Select(user => new ProjectParticipantResponse(user.Id, user.Username))
+                .ToList());
     }
 
     private static DateTime EnsureUtc(DateTime dateTime)

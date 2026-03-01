@@ -3,6 +3,7 @@ import { formatDate } from "../utils";
 import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
 import ProjectTasksTable from "./ProjectTasksTable";
 import TaskDetailsDrawer from "./TaskDetailsDrawer";
+import WorkspaceCreateTaskForm from "./WorkspaceCreateTaskForm";
 
 /**
  * Right-side project details view with creator-only delete action.
@@ -17,14 +18,22 @@ export default function WorkspaceDetails({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
 
   useEffect(() => {
     setSelectedTask(null);
+    setIsCreateTaskOpen(false);
   }, [selectedProject?.id]);
 
   const handleTaskUpdated = (updatedTask) => {
     setSelectedTask(updatedTask);
     setTasksRefreshKey((value) => value + 1);
+  };
+
+  const handleTaskCreated = async (createdTask) => {
+    setIsCreateTaskOpen(false);
+    setTasksRefreshKey((value) => value + 1);
+    setSelectedTask(createdTask);
   };
 
   return (
@@ -55,6 +64,13 @@ export default function WorkspaceDetails({
                   </button>
                   <button
                     type="button"
+                    className="neutral"
+                    onClick={() => setIsCreateTaskOpen((value) => !value)}
+                  >
+                    {isCreateTaskOpen ? "Close task form" : "Create task"}
+                  </button>
+                  <button
+                    type="button"
                     className="danger"
                     onClick={() => setIsDeleteModalOpen(true)}
                   >
@@ -67,6 +83,14 @@ export default function WorkspaceDetails({
                 </p>
               )}
             </div>
+            {isCreator && isCreateTaskOpen && (
+              <WorkspaceCreateTaskForm
+                currentUser={currentUser}
+                selectedProject={selectedProject}
+                onTaskCreated={handleTaskCreated}
+                onCancel={() => setIsCreateTaskOpen(false)}
+              />
+            )}
             <ProjectTasksTable
               currentUser={currentUser}
               selectedProject={selectedProject}

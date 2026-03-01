@@ -53,11 +53,13 @@
 }
 
 .create-project-form input,
-.create-project-form textarea {
+.create-project-form textarea,
+.create-project-form select {
   border: 1px solid #c8d4e6;
   border-radius: 8px;
   padding: 9px 10px;
   font: inherit;
+  background: #fff;
 }
 
 .create-project-form textarea {

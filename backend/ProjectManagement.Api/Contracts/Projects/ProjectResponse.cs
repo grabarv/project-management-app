@@ -7,4 +7,5 @@ public record ProjectResponse(
     DateTime CreatedAtUtc,
     DateTime DueDateUtc,
     int CreatedByUserId,
-    List<int> ParticipatingUserIds);
+    List<int> ParticipatingUserIds,
+    List<ProjectParticipantResponse> ParticipatingUsers);
