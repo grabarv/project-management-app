@@ -25,6 +25,11 @@ public interface ITaskService
     Task<OperationResult<TaskResponse>> UpdateAsync(int id, UpdateTaskRequest request, int currentUserId);
 
     /// <summary>
+    /// Toggles a task between Done and Pending for the assigned user.
+    /// </summary>
+    Task<OperationResult<TaskResponse>> ToggleDoneAsync(int id, int currentUserId);
+
+    /// <summary>
     /// Deletes a task. Only the project creator can delete tasks.
     /// </summary>
     Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId);

@@ -91,6 +91,21 @@ public static class TaskEndpoints
             return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
         });
 
+        tasks.MapPost("/tasks/{id:int}/toggle-done", async (
+            int id,
+            HttpContext httpContext,
+            ITaskService service) =>
+        {
+            var currentUserResult = TryGetCurrentUserId(httpContext);
+            if (!currentUserResult.Success)
+            {
+                return currentUserResult.ErrorResult!;
+            }
+
+            var result = await service.ToggleDoneAsync(id, currentUserResult.Value);
+            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+        });
+
         tasks.MapDelete("/tasks/{id:int}", async (
             int id,
             HttpContext httpContext,

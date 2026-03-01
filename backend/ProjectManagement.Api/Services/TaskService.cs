@@ -191,6 +191,40 @@ public sealed class TaskService(AppDbContext db) : ITaskService
             ToResponse(task, assignedToUsername, task.Project.CreatedByUser.Username));
     }
 
+    public async Task<OperationResult<TaskResponse>> ToggleDoneAsync(int id, int currentUserId)
+    {
+        var task = await db.Tasks
+            .Include(t => t.AssignedToUser)
+            .Include(t => t.Project)
+                .ThenInclude(p => p.CreatedByUser)
+            .Include(t => t.Project)
+                .ThenInclude(p => p.ParticipatingUsers)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (task is null)
+        {
+            return OperationResult<TaskResponse>.Fail(404, "Task not found");
+        }
+
+        if (!CanAccessProject(task.Project, currentUserId))
+        {
+            return OperationResult<TaskResponse>.Fail(403, "You do not have access to this task");
+        }
+
+        if (task.AssignedToUserId != currentUserId)
+        {
+            return OperationResult<TaskResponse>.Fail(403, "Only the assigned user can change this task status");
+        }
+
+        task.Status = task.Status == AppTaskStatus.Done.ToString()
+            ? AppTaskStatus.Pending.ToString()
+            : AppTaskStatus.Done.ToString();
+
+        await db.SaveChangesAsync();
+
+        return OperationResult<TaskResponse>.Ok(ToResponse(task));
+    }
+
     public async Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId)
     {
         var task = await db.Tasks

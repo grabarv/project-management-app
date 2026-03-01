@@ -1,12 +1,39 @@
+import { useState } from "react";
 import { formatDate } from "../utils";
+import { toggleTaskDone } from "../../../services/taskApi";
 
 /**
  * Task details view shown in place of project details.
  */
-export default function TaskDetailsDrawer({ task, onClose }) {
+export default function TaskDetailsDrawer({ task, currentUser, onClose, onTaskUpdated }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   if (!task) {
     return null;
   }
+
+  const isAssignedUser = task.assignedToUserId === currentUser?.userId;
+  const isDone = task.status === "Done";
+
+  const handleToggleDone = async () => {
+    if (!task.id || !currentUser?.userId || !isAssignedUser) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    const result = await toggleTaskDone(task.id, currentUser.userId);
+    if (!result.ok) {
+      setErrorMessage(result.message || "Failed to update task status");
+      setIsSubmitting(false);
+      return;
+    }
+
+    onTaskUpdated?.(result.data);
+    setIsSubmitting(false);
+  };
 
   return (
     <article className="task-details-view" aria-label="Task details">
@@ -16,6 +43,8 @@ export default function TaskDetailsDrawer({ task, onClose }) {
           Back to project
         </button>
       </div>
+
+      {errorMessage && <p className="workspace-error">{errorMessage}</p>}
 
       <div className="task-details-body">
         <p>
@@ -40,6 +69,14 @@ export default function TaskDetailsDrawer({ task, onClose }) {
           <strong>Assigned By:</strong> {task.assignedByUsername || "Unknown"}
         </p>
       </div>
+
+      {isAssignedUser && (
+        <div className="task-details-actions">
+          <button type="button" className="neutral" disabled={isSubmitting} onClick={handleToggleDone}>
+            {isSubmitting ? "Saving..." : isDone ? "Unmark task" : "Mark as done"}
+          </button>
+        </div>
+      )}
     </article>
   );
 }

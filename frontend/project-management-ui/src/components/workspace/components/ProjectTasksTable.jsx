@@ -5,7 +5,7 @@ import { fetchProjectTasks } from "../../../services/taskApi";
 /**
  * Read-only task table shown under selected project details.
  */
-export default function ProjectTasksTable({ currentUser, selectedProject, onTaskSelect }) {
+export default function ProjectTasksTable({ currentUser, selectedProject, onTaskSelect, refreshKey = 0 }) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +48,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject, onTask
     return () => {
       isMounted = false;
     };
-  }, [currentUser, selectedProject]);
+  }, [currentUser, selectedProject, refreshKey]);
 
   const myTasks = useMemo(() => {
     if (!currentUser?.userId) {

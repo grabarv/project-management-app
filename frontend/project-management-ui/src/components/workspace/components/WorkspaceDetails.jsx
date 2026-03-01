@@ -16,16 +16,27 @@ export default function WorkspaceDetails({
 }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
 
   useEffect(() => {
     setSelectedTask(null);
   }, [selectedProject?.id]);
 
+  const handleTaskUpdated = (updatedTask) => {
+    setSelectedTask(updatedTask);
+    setTasksRefreshKey((value) => value + 1);
+  };
+
   return (
     <section className="workspace-column workspace-details">
       {selectedProject ? (
         selectedTask ? (
-          <TaskDetailsDrawer task={selectedTask} onClose={() => setSelectedTask(null)} />
+          <TaskDetailsDrawer
+            task={selectedTask}
+            currentUser={currentUser}
+            onClose={() => setSelectedTask(null)}
+            onTaskUpdated={handleTaskUpdated}
+          />
         ) : (
           <article>
             <h2>{selectedProject.name}</h2>
@@ -60,6 +71,7 @@ export default function WorkspaceDetails({
               currentUser={currentUser}
               selectedProject={selectedProject}
               onTaskSelect={setSelectedTask}
+              refreshKey={tasksRefreshKey}
             />
           </article>
         )

@@ -445,6 +445,13 @@
   color: #324c6c;
 }
 
+.task-details-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
 @media (max-width: 900px) {
   .workspace-layout {
     grid-template-columns: 1fr;
