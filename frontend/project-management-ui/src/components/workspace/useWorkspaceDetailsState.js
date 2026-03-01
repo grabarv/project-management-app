@@ -10,6 +10,7 @@ export function useWorkspaceDetailsState(selectedProject) {
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedTask(null);
     setTaskViewMode("details");
     setIsCreateTaskOpen(false);
