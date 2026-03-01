@@ -72,6 +72,38 @@ export async function createProjectTask(projectId, payload, userId) {
   }
 }
 
+export async function updateTask(taskId, payload, userId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...withUserHeader(userId),
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await parseResponse(response, {});
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: result.message || "Failed to update task",
+      };
+    }
+
+    return {
+      ok: true,
+      data: result,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Network error. Please try again.",
+      error,
+    };
+  }
+}
+
 export async function toggleTaskDone(taskId, userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/tasks/${taskId}/toggle-done`, {

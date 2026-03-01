@@ -10,6 +10,7 @@ export default function ProjectTasksTable({
   currentUser,
   selectedProject,
   onTaskSelect,
+  onTaskEdit,
   onTaskDeleted,
   refreshKey = 0,
 }) {
@@ -87,6 +88,7 @@ export default function ProjectTasksTable({
     emptyMessage,
     showAssignedTo = false,
     showDeleteAction = false,
+    showEditAction = false,
     panelClassName = "",
     onTaskSelect,
   }) => (
@@ -113,7 +115,9 @@ export default function ProjectTasksTable({
                 {title === "My Tasks" && <th>Assigned By</th>}
                 {showAssignedTo && <th>Assigned To</th>}
                 <th>Due Date</th>
-                {showDeleteAction && <th className="task-actions-column" aria-label="Actions" />}
+                {(showEditAction || showDeleteAction) && (
+                  <th className="task-actions-column" aria-label="Actions" />
+                )}
               </tr>
             </thead>
             <tbody>
@@ -138,8 +142,27 @@ export default function ProjectTasksTable({
                   {title === "My Tasks" && <td>{task.assignedByUsername || "Unknown"}</td>}
                   {showAssignedTo && <td>{task.assignedToUsername || `User #${task.assignedToUserId}`}</td>}
                   <td>{formatDate(task.dueDateUtc)}</td>
-                  {showDeleteAction && (
+                  {(showEditAction || showDeleteAction) && (
                     <td className="task-actions-cell">
+                      {showEditAction && (
+                        <button
+                          type="button"
+                          className="task-edit-button"
+                          aria-label={`Update task ${task.name}`}
+                          title="Update task"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onTaskEdit?.(task);
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                              d="M4 4h10v2H6v12h12v-8h2v10H4V4zm11.7 1.3 2 2L10 15H8v-2l7.7-7.7zm1.4-1.4a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1 0 1.4L18.4 8.4l-2.9-2.9 1.6-1.6z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="task-delete-button"
@@ -180,6 +203,7 @@ export default function ProjectTasksTable({
           rows: otherUsersTasks,
           emptyMessage: "No tasks are assigned to other users in this project.",
           showAssignedTo: true,
+          showEditAction: true,
           showDeleteAction: true,
           panelClassName: "project-tasks-panel-secondary",
           onTaskSelect,

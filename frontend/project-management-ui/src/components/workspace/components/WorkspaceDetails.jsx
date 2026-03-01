@@ -4,6 +4,7 @@ import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
 import ProjectTasksTable from "./ProjectTasksTable";
 import TaskDetailsDrawer from "./TaskDetailsDrawer";
 import WorkspaceCreateTaskForm from "./WorkspaceCreateTaskForm";
+import WorkspaceUpdateTaskForm from "./WorkspaceUpdateTaskForm";
 
 /**
  * Right-side project details view with creator-only delete action.
@@ -17,16 +18,19 @@ export default function WorkspaceDetails({
 }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [taskViewMode, setTaskViewMode] = useState("details");
   const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
 
   useEffect(() => {
     setSelectedTask(null);
+    setTaskViewMode("details");
     setIsCreateTaskOpen(false);
   }, [selectedProject?.id]);
 
   const handleTaskUpdated = (updatedTask) => {
     setSelectedTask(updatedTask);
+    setTaskViewMode("details");
     setTasksRefreshKey((value) => value + 1);
   };
 
@@ -34,9 +38,12 @@ export default function WorkspaceDetails({
     setIsCreateTaskOpen(false);
     setTasksRefreshKey((value) => value + 1);
     setSelectedTask(createdTask);
+    setTaskViewMode("details");
   };
 
   const handleTaskDeleted = () => {
+    setSelectedTask(null);
+    setTaskViewMode("details");
     setTasksRefreshKey((value) => value + 1);
   };
 
@@ -44,12 +51,25 @@ export default function WorkspaceDetails({
     <section className="workspace-column workspace-details">
       {selectedProject ? (
         selectedTask ? (
-          <TaskDetailsDrawer
-            task={selectedTask}
-            currentUser={currentUser}
-            onClose={() => setSelectedTask(null)}
-            onTaskUpdated={handleTaskUpdated}
-          />
+          taskViewMode === "edit" ? (
+            <WorkspaceUpdateTaskForm
+              currentUser={currentUser}
+              selectedProject={selectedProject}
+              task={selectedTask}
+              onTaskUpdated={handleTaskUpdated}
+              onCancel={() => {
+                setSelectedTask(null);
+                setTaskViewMode("details");
+              }}
+            />
+          ) : (
+            <TaskDetailsDrawer
+              task={selectedTask}
+              currentUser={currentUser}
+              onClose={() => setSelectedTask(null)}
+              onTaskUpdated={handleTaskUpdated}
+            />
+          )
         ) : (
           <article>
             <h2>{selectedProject.name}</h2>
@@ -98,7 +118,14 @@ export default function WorkspaceDetails({
             <ProjectTasksTable
               currentUser={currentUser}
               selectedProject={selectedProject}
-              onTaskSelect={setSelectedTask}
+              onTaskSelect={(task) => {
+                setSelectedTask(task);
+                setTaskViewMode("details");
+              }}
+              onTaskEdit={(task) => {
+                setSelectedTask(task);
+                setTaskViewMode("edit");
+              }}
               onTaskDeleted={handleTaskDeleted}
               refreshKey={tasksRefreshKey}
             />

@@ -381,26 +381,40 @@
 
 .task-actions-cell {
   text-align: right;
+  white-space: nowrap;
 }
 
+.task-edit-button,
 .task-delete-button {
   width: 30px;
   height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #f1c2c2;
+  margin-left: 6px;
   border-radius: 8px;
-  background: #fff1f1;
-  color: #9a2424;
   cursor: pointer;
 }
 
+.task-edit-button {
+  border: 1px solid #c9d8f3;
+  background: #eef4ff;
+  color: #244e8f;
+}
+
+.task-delete-button {
+  border: 1px solid #f1c2c2;
+  background: #fff1f1;
+  color: #9a2424;
+}
+
+.task-edit-button svg,
 .task-delete-button svg {
   width: 15px;
   height: 15px;
 }
 
+.task-edit-button:disabled,
 .task-delete-button:disabled {
   opacity: 0.6;
   cursor: default;
