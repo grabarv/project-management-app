@@ -31,7 +31,16 @@ export default function WorkspaceCreateTaskForm({
   const { showError, showSuccess } = useNotification();
 
   const assignableUsers = useMemo(
-    () => (selectedProject?.participatingUsers ?? []).filter((user) => user.id !== currentUser?.userId),
+    () => {
+      const participants = selectedProject?.participatingUsers ?? [];
+      const creator = currentUser?.userId
+        ? [{ id: currentUser.userId, username: `${currentUser.username} (You)` }]
+        : [];
+
+      return [...creator, ...participants]
+        .filter((user, index, array) => array.findIndex((item) => item.id === user.id) === index)
+        .sort((a, b) => a.username.localeCompare(b.username));
+    },
     [selectedProject, currentUser]
   );
 
@@ -104,7 +113,7 @@ export default function WorkspaceCreateTaskForm({
       </div>
 
       {assignableUsers.length === 0 ? (
-        <p className="workspace-info">Add participants to this project before creating tasks for other users.</p>
+        <p className="workspace-info">No assignable users are available for this project.</p>
       ) : (
         <form className="create-project-form" onSubmit={handleSubmit}>
           <input
