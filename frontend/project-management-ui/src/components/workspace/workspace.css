@@ -335,6 +335,19 @@
   font-weight: 700;
 }
 
+.tasks-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #4a607b;
+  font-size: 0.9rem;
+}
+
+.tasks-filter-toggle input {
+  margin: 0;
+}
+
 .tasks-table-wrap {
   overflow-x: auto;
 }

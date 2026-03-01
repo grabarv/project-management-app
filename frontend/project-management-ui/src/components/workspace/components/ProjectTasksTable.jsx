@@ -18,6 +18,10 @@ export default function ProjectTasksTable({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
+  const [showOnlyNotDone, setShowOnlyNotDone] = useState({
+    myTasks: false,
+    othersTasks: false,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -83,6 +87,7 @@ export default function ProjectTasksTable({
   };
 
   const renderTaskTable = ({
+    tableKey,
     title,
     rows,
     emptyMessage,
@@ -91,21 +96,42 @@ export default function ProjectTasksTable({
     showEditAction = false,
     panelClassName = "",
     onTaskSelect,
-  }) => (
+  }) => {
+    const filteredRows = showOnlyNotDone[tableKey]
+      ? rows.filter((task) => task.status !== "Done")
+      : rows;
+
+    return (
     <section className={`project-tasks-panel ${panelClassName}`.trim()}>
       <div className="project-tasks-header">
         <h3>{title}</h3>
-        {!isLoading && !errorMessage && <span>{rows.length}</span>}
+        {!isLoading && !errorMessage && <span>{filteredRows.length}</span>}
       </div>
+
+      {rows.length > 0 && (
+        <label className="tasks-filter-toggle">
+          <input
+            type="checkbox"
+            checked={showOnlyNotDone[tableKey]}
+            onChange={(event) =>
+              setShowOnlyNotDone((prev) => ({
+                ...prev,
+                [tableKey]: event.target.checked,
+              }))
+            }
+          />
+          <span>Not done only</span>
+        </label>
+      )}
 
       {isLoading && <p className="workspace-info">Loading tasks...</p>}
       {!isLoading && errorMessage && <p className="workspace-error">{errorMessage}</p>}
 
-      {!isLoading && !errorMessage && rows.length === 0 && (
+      {!isLoading && !errorMessage && filteredRows.length === 0 && (
         <p className="workspace-info">{emptyMessage}</p>
       )}
 
-      {!isLoading && !errorMessage && rows.length > 0 && (
+      {!isLoading && !errorMessage && filteredRows.length > 0 && (
         <div className="tasks-table-wrap">
           <table className="tasks-table">
             <thead>
@@ -121,7 +147,7 @@ export default function ProjectTasksTable({
               </tr>
             </thead>
             <tbody>
-              {rows.map((task) => (
+              {filteredRows.map((task) => (
                 <tr
                   key={task.id}
                   className="task-row-clickable"
@@ -187,10 +213,12 @@ export default function ProjectTasksTable({
       )}
     </section>
   );
+  };
 
   return (
     <>
       {renderTaskTable({
+        tableKey: "myTasks",
         title: "My Tasks",
         rows: myTasks,
         emptyMessage: "No tasks assigned to you in this project.",
@@ -199,6 +227,7 @@ export default function ProjectTasksTable({
 
       {isCreator &&
         renderTaskTable({
+          tableKey: "othersTasks",
           title: "Others' Tasks",
           rows: otherUsersTasks,
           emptyMessage: "No tasks are assigned to other users in this project.",
