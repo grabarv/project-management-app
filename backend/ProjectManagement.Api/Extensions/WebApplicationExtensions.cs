@@ -61,6 +61,8 @@ public static class WebApplicationExtensions
             SeedUsersAndProjects(db, passwordHasher);
         }
 
+        NormalizeLegacyTaskStatuses(db);
+
         // Tasks are seeded separately so they can be added after a later migration too.
         SeedTasks(db);
     }
@@ -161,7 +163,7 @@ public static class WebApplicationExtensions
             {
                 Name = "Review color palette",
                 Description = "Validate brand colors and accessibility contrast.",
-                Status = AppTaskStatus.Pending.ToString(),
+                Status = AppTaskStatus.InProgress.ToString(),
                 CreatedAtUtc = now,
                 DueDateUtc = now.AddDays(7),
                 ProjectId = websiteRedesign.Id,
@@ -171,12 +173,31 @@ public static class WebApplicationExtensions
             {
                 Name = "Unify error responses",
                 Description = "Return consistent JSON payloads for 4xx/5xx responses.",
-                Status = AppTaskStatus.Pending.ToString(),
+                Status = AppTaskStatus.InProgress.ToString(),
                 CreatedAtUtc = now,
                 DueDateUtc = now.AddDays(4),
                 ProjectId = apiCleanup.Id,
                 AssignedToUserId = alice.Id
             });
+
+        db.SaveChanges();
+    }
+
+    private static void NormalizeLegacyTaskStatuses(AppDbContext db)
+    {
+        var pendingTasks = db.Tasks
+            .Where(task => task.Status == "Pending")
+            .ToList();
+
+        if (pendingTasks.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var task in pendingTasks)
+        {
+            task.Status = AppTaskStatus.InProgress.ToString();
+        }
 
         db.SaveChanges();
     }

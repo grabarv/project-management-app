@@ -25,7 +25,7 @@ public interface ITaskService
     Task<OperationResult<TaskResponse>> UpdateAsync(int id, UpdateTaskRequest request, int currentUserId);
 
     /// <summary>
-    /// Toggles a task between Done and Pending for the assigned user.
+    /// Toggles a task between Done and InProgress for the assigned user.
     /// </summary>
     Task<OperationResult<TaskResponse>> ToggleDoneAsync(int id, int currentUserId);
 

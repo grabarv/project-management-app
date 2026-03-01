@@ -384,17 +384,12 @@
   color: #385276;
 }
 
-.task-status.status-pending {
-  background: #fff3d8;
-  color: #8a5a00;
-}
-
 .task-status.status-inprogress {
   background: #dff0ff;
   color: #0d5ea8;
 }
 
-.task-status.status-completed {
+.task-status.status-done {
   background: #def3e4;
   color: #1f6a39;
 }

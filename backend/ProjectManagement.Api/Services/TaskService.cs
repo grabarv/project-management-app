@@ -217,7 +217,7 @@ public sealed class TaskService(AppDbContext db) : ITaskService
         }
 
         task.Status = task.Status == AppTaskStatus.Done.ToString()
-            ? AppTaskStatus.Pending.ToString()
+            ? AppTaskStatus.InProgress.ToString()
             : AppTaskStatus.Done.ToString();
 
         await db.SaveChangesAsync();

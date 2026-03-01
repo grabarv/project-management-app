@@ -5,7 +5,6 @@ namespace ProjectManagement.Api.Models;
 /// </summary>
 public enum TaskStatus
 {
-    Pending = 1,
-    InProgress = 2,
-    Done = 3
+    InProgress = 1,
+    Done = 2
 }
