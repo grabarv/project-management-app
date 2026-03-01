@@ -2,6 +2,7 @@ import { useState } from "react";
 import TaskDeleteConfirmModal from "./TaskDeleteConfirmModal";
 import TaskTableSection from "./TaskTableSection";
 import { useProjectTasks } from "../useProjectTasks";
+import { useTaskTableFilters } from "../useTaskTableFilters";
 
 /**
  * Read-only task table shown under selected project details.
@@ -15,15 +16,17 @@ export default function ProjectTasksTable({
   refreshKey = 0,
 }) {
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
-  const [showOnlyNotDone, setShowOnlyNotDone] = useState({
-    myTasks: false,
-    othersTasks: false,
-  });
   const { myTasks, otherUsersTasks, isLoading, errorMessage } = useProjectTasks(
     currentUser,
     selectedProject,
     refreshKey
   );
+  const {
+    showOnlyNotDone,
+    setShowOnlyNotDone,
+    filteredMyTasks,
+    filteredOtherUsersTasks,
+  } = useTaskTableFilters(myTasks, otherUsersTasks);
 
   const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
 
@@ -36,8 +39,8 @@ export default function ProjectTasksTable({
     <>
       <TaskTableSection
         title="My Tasks"
-        rows={showOnlyNotDone.myTasks ? myTasks.filter((task) => task.status !== "Done") : myTasks}
-        totalCount={showOnlyNotDone.myTasks ? myTasks.filter((task) => task.status !== "Done").length : myTasks.length}
+        rows={filteredMyTasks}
+        totalCount={filteredMyTasks.length}
         emptyMessage="No tasks assigned to you in this project."
         isLoading={isLoading}
         errorMessage={errorMessage}
@@ -55,16 +58,8 @@ export default function ProjectTasksTable({
       {isCreator && (
         <TaskTableSection
           title="Others' Tasks"
-          rows={
-            showOnlyNotDone.othersTasks
-              ? otherUsersTasks.filter((task) => task.status !== "Done")
-              : otherUsersTasks
-          }
-          totalCount={
-            showOnlyNotDone.othersTasks
-              ? otherUsersTasks.filter((task) => task.status !== "Done").length
-              : otherUsersTasks.length
-          }
+          rows={filteredOtherUsersTasks}
+          totalCount={filteredOtherUsersTasks.length}
           emptyMessage="No tasks are assigned to other users in this project."
           isLoading={isLoading}
           errorMessage={errorMessage}
