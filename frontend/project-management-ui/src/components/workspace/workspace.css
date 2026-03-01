@@ -358,6 +358,10 @@
   font-weight: 600;
 }
 
+.task-actions-column {
+  width: 44px;
+}
+
 .tasks-table tbody tr:last-child td {
   border-bottom: 0;
 }
@@ -373,6 +377,33 @@
 
 .task-row-clickable:focus {
   outline: none;
+}
+
+.task-actions-cell {
+  text-align: right;
+}
+
+.task-delete-button {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f1c2c2;
+  border-radius: 8px;
+  background: #fff1f1;
+  color: #9a2424;
+  cursor: pointer;
+}
+
+.task-delete-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.task-delete-button:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .task-status {

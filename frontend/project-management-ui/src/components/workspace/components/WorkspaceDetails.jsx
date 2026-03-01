@@ -36,6 +36,10 @@ export default function WorkspaceDetails({
     setSelectedTask(createdTask);
   };
 
+  const handleTaskDeleted = () => {
+    setTasksRefreshKey((value) => value + 1);
+  };
+
   return (
     <section className="workspace-column workspace-details">
       {selectedProject ? (
@@ -95,6 +99,7 @@ export default function WorkspaceDetails({
               currentUser={currentUser}
               selectedProject={selectedProject}
               onTaskSelect={setSelectedTask}
+              onTaskDeleted={handleTaskDeleted}
               refreshKey={tasksRefreshKey}
             />
           </article>

@@ -1,14 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { formatDate } from "../utils";
 import { fetchProjectTasks } from "../../../services/taskApi";
+import TaskDeleteConfirmModal from "./TaskDeleteConfirmModal";
 
 /**
  * Read-only task table shown under selected project details.
  */
-export default function ProjectTasksTable({ currentUser, selectedProject, onTaskSelect, refreshKey = 0 }) {
+export default function ProjectTasksTable({
+  currentUser,
+  selectedProject,
+  onTaskSelect,
+  onTaskDeleted,
+  refreshKey = 0,
+}) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [taskPendingDelete, setTaskPendingDelete] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -68,11 +76,17 @@ export default function ProjectTasksTable({ currentUser, selectedProject, onTask
 
   const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
 
+  const handleDeleteTaskClick = (event, task) => {
+    event.stopPropagation();
+    setTaskPendingDelete(task);
+  };
+
   const renderTaskTable = ({
     title,
     rows,
     emptyMessage,
     showAssignedTo = false,
+    showDeleteAction = false,
     panelClassName = "",
     onTaskSelect,
   }) => (
@@ -99,6 +113,7 @@ export default function ProjectTasksTable({ currentUser, selectedProject, onTask
                 {title === "My Tasks" && <th>Assigned By</th>}
                 {showAssignedTo && <th>Assigned To</th>}
                 <th>Due Date</th>
+                {showDeleteAction && <th className="task-actions-column" aria-label="Actions" />}
               </tr>
             </thead>
             <tbody>
@@ -123,6 +138,24 @@ export default function ProjectTasksTable({ currentUser, selectedProject, onTask
                   {title === "My Tasks" && <td>{task.assignedByUsername || "Unknown"}</td>}
                   {showAssignedTo && <td>{task.assignedToUsername || `User #${task.assignedToUserId}`}</td>}
                   <td>{formatDate(task.dueDateUtc)}</td>
+                  {showDeleteAction && (
+                    <td className="task-actions-cell">
+                      <button
+                        type="button"
+                        className="task-delete-button"
+                        aria-label={`Delete task ${task.name}`}
+                        title="Delete task"
+                        onClick={(event) => handleDeleteTaskClick(event, task)}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v8h-2V9zm4 0h2v8h-2V9zM7 9h2v8H7V9zm1 12a2 2 0 0 1-2-2V8h12v11a2 2 0 0 1-2 2H8z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -147,9 +180,20 @@ export default function ProjectTasksTable({ currentUser, selectedProject, onTask
           rows: otherUsersTasks,
           emptyMessage: "No tasks are assigned to other users in this project.",
           showAssignedTo: true,
+          showDeleteAction: true,
           panelClassName: "project-tasks-panel-secondary",
           onTaskSelect,
         })}
+
+      {taskPendingDelete && (
+        <TaskDeleteConfirmModal
+          taskId={taskPendingDelete.id}
+          taskName={taskPendingDelete.name}
+          currentUser={currentUser}
+          onClose={() => setTaskPendingDelete(null)}
+          onDeleted={onTaskDeleted}
+        />
+      )}
     </>
   );
 }

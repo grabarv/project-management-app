@@ -99,3 +99,28 @@ export async function toggleTaskDone(taskId, userId) {
     };
   }
 }
+
+export async function deleteTask(taskId, userId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: withUserHeader(userId),
+    });
+
+    if (!response.ok) {
+      const result = await parseResponse(response, {});
+      return {
+        ok: false,
+        message: result.message || "Failed to delete task",
+      };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Network error. Please try again.",
+      error,
+    };
+  }
+}
