@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { deleteProject } from "../../../../services/projectApi";
 import { useNotification } from "../../../notification/notificationContext";
+import ConfirmModal from "../shared/ConfirmModal";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
@@ -42,27 +43,16 @@ export default function ProjectDeleteConfirmModal({ onClose }) {
   };
 
   return (
-    <div className="modal-overlay" role="presentation" onClick={onClose}>
-      <div
-        className="modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="delete-project-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h3 id="delete-project-title">Delete project?</h3>
-        <p>
+    <ConfirmModal
+      title="Delete project?"
+      message={
+        <>
           This action will permanently remove <strong>{selectedProject?.name}</strong>.
-        </p>
-        <div className="modal-actions">
-          <button type="button" className="neutral" disabled={isDeleting} onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="danger" disabled={isDeleting} onClick={handleConfirmDelete}>
-            {isDeleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+      isSubmitting={isDeleting}
+      onClose={onClose}
+      onConfirm={handleConfirmDelete}
+    />
   );
 }

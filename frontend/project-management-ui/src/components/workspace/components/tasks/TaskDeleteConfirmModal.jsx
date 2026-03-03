@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { deleteTask } from "../../../../services/taskApi";
 import { useNotification } from "../../../notification/notificationContext";
+import ConfirmModal from "../shared/ConfirmModal";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
@@ -35,27 +36,16 @@ export default function TaskDeleteConfirmModal({ taskId, taskName, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" role="presentation" onClick={onClose}>
-      <div
-        className="modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="delete-task-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h3 id="delete-task-title">Delete task?</h3>
-        <p>
+    <ConfirmModal
+      title="Delete task?"
+      message={
+        <>
           This action will permanently remove <strong>{taskName}</strong>.
-        </p>
-        <div className="modal-actions">
-          <button type="button" className="neutral" disabled={isDeleting} onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="danger" disabled={isDeleting} onClick={handleConfirmDelete}>
-            {isDeleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+      isSubmitting={isDeleting}
+      onClose={onClose}
+      onConfirm={handleConfirmDelete}
+    />
   );
 }
