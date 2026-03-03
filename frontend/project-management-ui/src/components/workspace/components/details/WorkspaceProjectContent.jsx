@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ProjectDeleteConfirmModal from "../projects/ProjectDeleteConfirmModal";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import ProjectDetailsContent from "./ProjectDetailsContent";
@@ -8,24 +8,15 @@ import ProjectDetailsContent from "./ProjectDetailsContent";
  */
 export default function WorkspaceProjectContent({ taskControls }) {
   const {
-    currentUser,
     selectedProject,
-    actions: { handleProjectDeleted, startUpdateProject },
+    actions: { handleProjectDeleted },
   } = useWorkspaceContext();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const isCreator = useMemo(
-    () => selectedProject?.createdByUserId === currentUser?.userId,
-    [selectedProject, currentUser]
-  );
 
   return (
     <>
       <ProjectDetailsContent
-        currentUser={currentUser}
-        selectedProject={selectedProject}
-        isCreator={isCreator}
         isCreateTaskOpen={taskControls.isCreateTaskOpen}
-        onStartUpdateProject={startUpdateProject}
         onToggleCreateTask={taskControls.toggleCreateTask}
         onOpenProjectDelete={() => setIsDeleteModalOpen(true)}
         onTaskCreated={taskControls.handleTaskCreated}
