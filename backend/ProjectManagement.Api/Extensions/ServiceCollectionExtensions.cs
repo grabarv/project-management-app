@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddOpenApi();
         services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IProjectInvitationService, ProjectInvitationService>();
         services.AddScoped<ITaskService, TaskService>();
 
         services.AddDbContext<AppDbContext>(options =>

@@ -46,6 +46,7 @@ public static class WebApplicationExtensions
     {
         app.MapAuthEndpoints();
         app.MapProjectEndpoints();
+        app.MapProjectInvitationEndpoints();
         app.MapTaskEndpoints();
         return app;
     }

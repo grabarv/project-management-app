@@ -51,3 +51,44 @@ DELETE {{ProjectManagement.Api_HostAddress}}/api/projects/1
 X-User-Id: 1
 
 ###
+
+### Project invitations - creator sends invite to user 3 for project 1
+POST {{ProjectManagement.Api_HostAddress}}/api/projects/1/invitations
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "invitedUserId": 3
+}
+
+###
+
+### Project invitations - creator lists invitations for project 1
+GET {{ProjectManagement.Api_HostAddress}}/api/projects/1/invitations
+X-User-Id: 1
+
+###
+
+### Project invitations - invited user lists received invitations
+GET {{ProjectManagement.Api_HostAddress}}/api/project-invitations/received
+X-User-Id: 3
+
+###
+
+### Project invitations - invited user accepts invitation 1
+POST {{ProjectManagement.Api_HostAddress}}/api/project-invitations/1/accept
+X-User-Id: 3
+
+###
+
+### Project invitations - invited user declines invitation 1
+POST {{ProjectManagement.Api_HostAddress}}/api/project-invitations/1/decline
+X-User-Id: 3
+
+###
+
+### Project invitations - creator cancels invitation 1
+DELETE {{ProjectManagement.Api_HostAddress}}/api/project-invitations/1
+X-User-Id: 1
+
+###

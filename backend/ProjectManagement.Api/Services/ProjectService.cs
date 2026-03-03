@@ -46,6 +46,14 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(403, "CreatedByUserId must match the current user");
         }
 
+        // New participants must join through invitation acceptance, not direct project creation payload.
+        if (request.ParticipatingUserIds.Count > 0)
+        {
+            return OperationResult<ProjectResponse>.Fail(
+                400,
+                "Participants must be invited after project creation");
+        }
+
         var creatorExists = await db.Users.AnyAsync(user => user.Id == currentUserId);
         if (!creatorExists)
         {
@@ -60,20 +68,13 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
         }
 
-        var participantsResult = await ResolveParticipantsAsync(request.ParticipatingUserIds);
-        if (!participantsResult.Success)
-        {
-            return OperationResult<ProjectResponse>.Fail(participantsResult.StatusCode, participantsResult.Error!);
-        }
-
         var project = new AppProject
         {
             Name = request.Name,
             Description = request.Description,
             CreatedAtUtc = createdAtUtc,
             DueDateUtc = dueDateUtc,
-            CreatedByUserId = currentUserId,
-            ParticipatingUsers = participantsResult.Value!
+            CreatedByUserId = currentUserId
         };
 
         db.Projects.Add(project);
@@ -98,6 +99,14 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(403, "Only project creator can update this project");
         }
 
+        // Accepted participants are managed via invitation workflow now.
+        if (request.ParticipatingUserIds.Count > 0)
+        {
+            return OperationResult<ProjectResponse>.Fail(
+                400,
+                "Participants must be managed through invitations");
+        }
+
         var dueDateUtc = EnsureUtc(request.DueDateUtc);
         // Due date is day-based input in UI, so validate at date granularity.
         if (dueDateUtc.Date < project.CreatedAtUtc.Date)
@@ -105,16 +114,9 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(400, "DueDateUtc cannot be earlier than CreatedAtUtc");
         }
 
-        var participantsResult = await ResolveParticipantsAsync(request.ParticipatingUserIds);
-        if (!participantsResult.Success)
-        {
-            return OperationResult<ProjectResponse>.Fail(participantsResult.StatusCode, participantsResult.Error!);
-        }
-
         project.Name = request.Name;
         project.Description = request.Description;
         project.DueDateUtc = dueDateUtc;
-        project.ParticipatingUsers = participantsResult.Value!;
 
         await db.SaveChangesAsync();
 
@@ -137,24 +139,6 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         db.Projects.Remove(project);
         await db.SaveChangesAsync();
         return OperationResult<bool>.Ok(true);
-    }
-
-    private async Task<OperationResult<List<AppUser>>> ResolveParticipantsAsync(IEnumerable<int> participantIds)
-    {
-        var uniqueParticipantIds = participantIds
-            .Distinct()
-            .ToList();
-
-        var participants = await db.Users
-            .Where(user => uniqueParticipantIds.Contains(user.Id))
-            .ToListAsync();
-
-        if (participants.Count != uniqueParticipantIds.Count)
-        {
-            return OperationResult<List<AppUser>>.Fail(400, "One or more participating user ids are invalid");
-        }
-
-        return OperationResult<List<AppUser>>.Ok(participants);
     }
 
     private static ProjectResponse ToResponse(AppProject project)
