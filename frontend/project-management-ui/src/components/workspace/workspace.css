@@ -352,6 +352,30 @@
   color: #1f6a3a;
 }
 
+.participant-chip-removable {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 6px;
+}
+
+.participant-chip-remove {
+  border: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #f6d9d9;
+  color: #8f1f1f;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.participant-chip-remove:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .invitation-form {
   display: grid;
   gap: 8px;

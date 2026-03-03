@@ -152,6 +152,57 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         return OperationResult<bool>.Ok(true);
     }
 
+    public async Task<OperationResult<ProjectResponse>> RemoveParticipantAsync(
+        int projectId,
+        int participantUserId,
+        int currentUserId)
+    {
+        var project = await db.Projects
+            .Include(item => item.ParticipatingUsers)
+            .Include(item => item.Invitations)
+                .ThenInclude(invitation => invitation.InvitedUser)
+            .Include(item => item.Invitations)
+                .ThenInclude(invitation => invitation.InvitedByUser)
+            .FirstOrDefaultAsync(item => item.Id == projectId);
+
+        if (project is null)
+        {
+            return OperationResult<ProjectResponse>.Fail(404, "Project not found");
+        }
+
+        if (project.CreatedByUserId != currentUserId)
+        {
+            return OperationResult<ProjectResponse>.Fail(403, "Only project creator can remove participants");
+        }
+
+        if (participantUserId == project.CreatedByUserId)
+        {
+            return OperationResult<ProjectResponse>.Fail(400, "Project creator cannot be removed");
+        }
+
+        var participant = project.ParticipatingUsers.FirstOrDefault(user => user.Id == participantUserId);
+        if (participant is null)
+        {
+            return OperationResult<ProjectResponse>.Fail(404, "Participant not found");
+        }
+
+        project.ParticipatingUsers.Remove(participant);
+
+        // Tasks assigned to the removed participant are no longer valid for the project.
+        var participantTasks = await db.Tasks
+            .Where(task => task.ProjectId == projectId && task.AssignedToUserId == participantUserId)
+            .ToListAsync();
+
+        if (participantTasks.Count > 0)
+        {
+            db.Tasks.RemoveRange(participantTasks);
+        }
+
+        await db.SaveChangesAsync();
+
+        return OperationResult<ProjectResponse>.Ok(ToResponse(project, currentUserId));
+    }
+
     private static ProjectResponse ToResponse(AppProject project, int currentUserId)
     {
         return new ProjectResponse(

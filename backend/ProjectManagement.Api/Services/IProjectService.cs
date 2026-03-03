@@ -28,4 +28,13 @@ public interface IProjectService
     /// Deletes a project. Only the creator can perform this action.
     /// </summary>
     Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId);
+
+    /// <summary>
+    /// Removes an accepted participant from the project and deletes their project tasks.
+    /// Only the creator can perform this action.
+    /// </summary>
+    Task<OperationResult<ProjectResponse>> RemoveParticipantAsync(
+        int projectId,
+        int participantUserId,
+        int currentUserId);
 }

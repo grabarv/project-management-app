@@ -125,3 +125,34 @@ export async function deleteProject(projectId, userId) {
     };
   }
 }
+
+/**
+ * Removes a participant from a project and deletes that user's tasks in the project.
+ */
+export async function removeProjectParticipant(projectId, participantUserId, userId) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/${projectId}/participants/${participantUserId}`,
+      {
+        method: "DELETE",
+        headers: withUserHeader(userId),
+      }
+    );
+    const result = await parseResponse(response, {});
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: result.message || "Failed to remove participant",
+      };
+    }
+
+    return { ok: true, data: result };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Network error. Please try again.",
+      error,
+    };
+  }
+}

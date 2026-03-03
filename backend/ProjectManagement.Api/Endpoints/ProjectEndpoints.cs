@@ -101,6 +101,24 @@ public static class ProjectEndpoints
             return Results.NoContent();
         });
 
+        projects.MapDelete(
+            "/{projectId:int}/participants/{participantUserId:int}",
+            async (int projectId, int participantUserId, HttpContext httpContext, IProjectService service) =>
+        {
+            var currentUserResult = TryGetCurrentUserId(httpContext);
+            if (!currentUserResult.Success)
+            {
+                return currentUserResult.ErrorResult!;
+            }
+
+            var result = await service.RemoveParticipantAsync(
+                projectId,
+                participantUserId,
+                currentUserResult.Value);
+
+            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+        });
+
         return app;
     }
 

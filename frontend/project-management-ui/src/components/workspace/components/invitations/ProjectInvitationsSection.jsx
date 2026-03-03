@@ -5,6 +5,7 @@ import {
 } from "../../../../services/projectInvitationApi";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import ParticipantRemoveConfirmModal from "./ParticipantRemoveConfirmModal";
 
 /**
  * Creator-side invitation management for the selected project.
@@ -21,6 +22,7 @@ export default function ProjectInvitationsSection() {
   const [invitedUsername, setInvitedUsername] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeInvitationId, setActiveInvitationId] = useState(null);
+  const [participantToRemove, setParticipantToRemove] = useState(null);
 
   const pendingInvitations = useMemo(
     () =>
@@ -92,71 +94,95 @@ export default function ProjectInvitationsSection() {
   };
 
   return (
-    <section className="project-tasks-panel project-tasks-panel-secondary">
-      <div className="project-tasks-header">
-        <h3>Participants & invitations</h3>
-      </div>
+    <>
+      <section className="project-tasks-panel project-tasks-panel-secondary">
+        <div className="project-tasks-header">
+          <h3>Participants & invitations</h3>
+        </div>
 
-      <div className="participant-list">
-        <span className="participant-chip participant-chip-owner">
-          {selectedProject.createdByUserId === currentUser?.userId ? "You" : "Creator"}
-        </span>
-        {(selectedProject.participatingUsers ?? []).map((user) => (
-          <span key={user.id} className="participant-chip">
-            {user.username}
+        <div className="participant-list">
+          <span className="participant-chip participant-chip-owner">
+            {selectedProject.createdByUserId === currentUser?.userId ? "You" : "Creator"}
           </span>
-        ))}
-      </div>
+          {(selectedProject.participatingUsers ?? []).map((user) => (
+            <span key={user.id} className="participant-chip participant-chip-removable">
+              <span>{user.username}</span>
+              {isCreator && (
+                <button
+                  type="button"
+                  className="participant-chip-remove"
+                  onClick={() =>
+                    setParticipantToRemove({
+                      userId: user.id,
+                      username: user.username,
+                    })
+                  }
+                >
+                  x
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
 
-      {isCreator && (
-        <form className="invitation-form" onSubmit={handleInviteSubmit}>
-          <label htmlFor="invited-username">Invite by username</label>
-          <div className="invitation-form-row">
-            <input
-              id="invited-username"
-              type="text"
-              placeholder="Username"
-              value={invitedUsername}
-              onChange={(event) => setInvitedUsername(event.target.value)}
-            />
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Sending..." : "Send invite"}
-            </button>
-          </div>
-          <p className="workspace-info">
-            Temporary input: enter an existing username until user search is added.
-          </p>
-        </form>
-      )}
+        {isCreator && (
+          <form className="invitation-form" onSubmit={handleInviteSubmit}>
+            <label htmlFor="invited-username">Invite by username</label>
+            <div className="invitation-form-row">
+              <input
+                id="invited-username"
+                type="text"
+                placeholder="Username"
+                value={invitedUsername}
+                onChange={(event) => setInvitedUsername(event.target.value)}
+              />
+              <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send invite"}
+              </button>
+            </div>
+            <p className="workspace-info">
+              Temporary input: enter an existing username until user search is added.
+            </p>
+          </form>
+        )}
 
-      {isCreator && (
-        <>
-          {pendingInvitations.length === 0 ? (
-            <p className="workspace-info">No pending invitations for this project.</p>
-          ) : (
-            <ul className="project-list invitation-list">
-              {pendingInvitations.map((invitation) => (
-                <li key={invitation.id} className="invitation-item">
-                  <div>
-                    <p className="invitation-title">{invitation.invitedUsername}</p>
-                    <p className="invitation-meta">
-                      Sent on {new Date(invitation.createdAtUtc).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className="danger"
-                    disabled={activeInvitationId === invitation.id}
-                    onClick={() => handleCancelInvitation(invitation.id)}
-                  >
-                    {activeInvitationId === invitation.id ? "Working..." : "Cancel"}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+        {isCreator && (
+          <>
+            {pendingInvitations.length === 0 ? (
+              <p className="workspace-info">No pending invitations for this project.</p>
+            ) : (
+              <ul className="project-list invitation-list">
+                {pendingInvitations.map((invitation) => (
+                  <li key={invitation.id} className="invitation-item">
+                    <div>
+                      <p className="invitation-title">{invitation.invitedUsername}</p>
+                      <p className="invitation-meta">
+                        Sent on {new Date(invitation.createdAtUtc).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="danger"
+                      disabled={activeInvitationId === invitation.id}
+                      onClick={() => handleCancelInvitation(invitation.id)}
+                    >
+                      {activeInvitationId === invitation.id ? "Working..." : "Cancel"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </section>
+
+      {participantToRemove && (
+        <ParticipantRemoveConfirmModal
+          participantUserId={participantToRemove.userId}
+          participantUsername={participantToRemove.username}
+          onClose={() => setParticipantToRemove(null)}
+        />
       )}
-    </section>
+    </>
   );
 }

@@ -52,6 +52,12 @@ X-User-Id: 1
 
 ###
 
+### Projects - remove participant 3 from project 1
+DELETE {{ProjectManagement.Api_HostAddress}}/api/projects/1/participants/3
+X-User-Id: 1
+
+###
+
 ### Project invitations - creator sends invite to user "carol" for project 1
 POST {{ProjectManagement.Api_HostAddress}}/api/projects/1/invitations
 Content-Type: application/json
