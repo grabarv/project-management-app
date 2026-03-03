@@ -154,6 +154,40 @@
   gap: 14px;
 }
 
+.workspace-sidebar-panel {
+  margin-top: 18px;
+  border: 1px solid #dfe7f2;
+  border-radius: 10px;
+  background: #fbfcff;
+  padding: 12px;
+}
+
+.workspace-sidebar-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.workspace-sidebar-panel-header h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #415873;
+}
+
+.workspace-sidebar-panel-header span {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf2fb;
+  color: #385276;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .project-group {
   border: 1px solid #dfe7f2;
   border-radius: 10px;
@@ -295,6 +329,122 @@
 .project-actions button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.participant-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.participant-chip {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #edf3ff;
+  color: #29496f;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.participant-chip-owner {
+  background: #dff3e6;
+  color: #1f6a3a;
+}
+
+.invitation-form {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.invitation-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #415873;
+}
+
+.invitation-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.invitation-form-row input {
+  flex: 1;
+  border: 1px solid #c8d4e6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.invitation-form-row button,
+.invitation-actions button,
+.invitation-item > button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.invitation-form-row button,
+.invitation-actions button:last-child {
+  background: #1f78ff;
+  color: #fff;
+}
+
+.invitation-actions button:first-child {
+  background: #ebf1fb;
+  border-color: #c9d8f3;
+  color: #284673;
+}
+
+.invitation-item > button,
+.invitation-actions .danger {
+  background: #fde7e7;
+  border-color: #f3b2b2;
+  color: #961f1f;
+}
+
+.invitation-form-row button:disabled,
+.invitation-actions button:disabled,
+.invitation-item > button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.invitation-list {
+  gap: 10px;
+}
+
+.invitation-item {
+  border: 1px solid #dfe7f2;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.invitation-title {
+  margin: 0;
+  font-weight: 700;
+  color: #20344f;
+}
+
+.invitation-meta {
+  margin: 4px 0 0;
+  color: #56708f;
+  font-size: 0.85rem;
+}
+
+.invitation-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .project-tasks-panel {

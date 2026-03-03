@@ -72,25 +72,31 @@ public sealed class ProjectInvitationService(AppDbContext db) : IProjectInvitati
             return OperationResult<ProjectInvitationResponse>.Fail(403, "Only project creator can invite users");
         }
 
-        if (request.InvitedUserId == currentUserId)
+        var normalizedUsername = request.InvitedUsername.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedUsername))
+        {
+            return OperationResult<ProjectInvitationResponse>.Fail(400, "InvitedUsername is required");
+        }
+
+        var invitedUser = await db.Users.FirstOrDefaultAsync(user => user.Username == normalizedUsername);
+        if (invitedUser is null)
+        {
+            return OperationResult<ProjectInvitationResponse>.Fail(400, "InvitedUsername is invalid");
+        }
+
+        if (invitedUser.Id == currentUserId)
         {
             return OperationResult<ProjectInvitationResponse>.Fail(400, "Project creator cannot invite themselves");
         }
 
-        var invitedUser = await db.Users.FirstOrDefaultAsync(user => user.Id == request.InvitedUserId);
-        if (invitedUser is null)
-        {
-            return OperationResult<ProjectInvitationResponse>.Fail(400, "InvitedUserId is invalid");
-        }
-
-        if (project.ParticipatingUsers.Any(user => user.Id == request.InvitedUserId))
+        if (project.ParticipatingUsers.Any(user => user.Id == invitedUser.Id))
         {
             return OperationResult<ProjectInvitationResponse>.Fail(400, "User is already a participant");
         }
 
         var pendingExists = await db.ProjectInvitations.AnyAsync(invitation =>
             invitation.ProjectId == projectId &&
-            invitation.InvitedUserId == request.InvitedUserId &&
+            invitation.InvitedUserId == invitedUser.Id &&
             invitation.Status == ProjectInvitationStatus.Pending.ToString());
 
         if (pendingExists)
@@ -101,7 +107,7 @@ public sealed class ProjectInvitationService(AppDbContext db) : IProjectInvitati
         var invitation = new AppProjectInvitation
         {
             ProjectId = projectId,
-            InvitedUserId = request.InvitedUserId,
+            InvitedUserId = invitedUser.Id,
             InvitedByUserId = currentUserId,
             Status = ProjectInvitationStatus.Pending.ToString(),
             CreatedAtUtc = DateTime.UtcNow

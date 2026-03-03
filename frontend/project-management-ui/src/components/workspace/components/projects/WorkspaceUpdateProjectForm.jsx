@@ -57,7 +57,8 @@ export default function WorkspaceUpdateProjectForm() {
         name: formData.name.trim(),
         description: formData.description.trim(),
         dueDateUtc,
-        participatingUserIds: selectedProject.participatingUserIds ?? [],
+        // Participants are now managed only through the invitation workflow.
+        participatingUserIds: [],
       },
       currentUserId
     );

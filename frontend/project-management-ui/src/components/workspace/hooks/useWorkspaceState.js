@@ -116,6 +116,7 @@ export function useWorkspaceState(currentUser, showError) {
       startUpdateProject,
       selectProject,
       cancelPanel,
+      reloadProjects: loadProjects,
       handleProjectCreated,
       handleProjectDeleted,
       handleProjectUpdated,

@@ -30,6 +30,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsUnique();
 
         modelBuilder.Entity<AppUser>()
+            .HasIndex(user => user.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<AppUser>()
             .Property(user => user.Username)
             .IsRequired()
             .HasMaxLength(100);

@@ -1,5 +1,6 @@
 import WorkspaceProjectGroup from "./WorkspaceProjectGroup";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import ReceivedInvitationsPanel from "../invitations/ReceivedInvitationsPanel";
 
 /**
  * Left-side project navigation panel.
@@ -55,6 +56,8 @@ export default function WorkspaceSidebar() {
           />
         </div>
       )}
+
+      <ReceivedInvitationsPanel />
     </section>
   );
 }

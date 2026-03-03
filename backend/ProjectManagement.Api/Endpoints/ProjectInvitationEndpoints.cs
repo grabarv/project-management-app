@@ -53,9 +53,9 @@ public static class ProjectInvitationEndpoints
                 return currentUserResult.ErrorResult!;
             }
 
-            if (request.InvitedUserId <= 0)
+            if (string.IsNullOrWhiteSpace(request.InvitedUsername))
             {
-                return Results.BadRequest(new { message = "InvitedUserId is required" });
+                return Results.BadRequest(new { message = "InvitedUsername is required" });
             }
 
             var result = await service.CreateAsync(projectId, request, currentUserResult.Value);
