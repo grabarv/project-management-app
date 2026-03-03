@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./workspace.css";
 import { fetchProjects } from "../../services/projectApi";
-import WorkspaceSidebar from "./components/WorkspaceSidebar";
-import WorkspaceDetails from "./components/WorkspaceDetails";
-import WorkspaceCreateProjectForm from "./components/WorkspaceCreateProjectForm";
-import WorkspaceUpdateProjectForm from "./components/WorkspaceUpdateProjectForm";
+import WorkspaceSidebar from "./components/sidebar/WorkspaceSidebar";
+import WorkspaceDetails from "./components/details/WorkspaceDetails";
+import WorkspaceCreateProjectForm from "./components/projects/WorkspaceCreateProjectForm";
+import WorkspaceUpdateProjectForm from "./components/projects/WorkspaceUpdateProjectForm";
 import { useNotification } from "../notification/notificationContext";
 
 /**

@@ -1,6 +1,6 @@
-import { formatDate } from "../utils";
-import ProjectTasksTable from "./ProjectTasksTable";
-import WorkspaceCreateTaskForm from "./WorkspaceCreateTaskForm";
+import { formatDate } from "../../shared/utils";
+import ProjectTasksTable from "../tasks/ProjectTasksTable";
+import WorkspaceCreateTaskForm from "../tasks/WorkspaceCreateTaskForm";
 
 /**
  * Project details view shown when no task subview is active.

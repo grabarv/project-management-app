@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { createProject } from "../../../services/projectApi";
-import { EMPTY_CREATE_FORM } from "../constants";
-import { toApiDateTime } from "../utils";
-import { useNotification } from "../../notification/notificationContext";
+import { createProject } from "../../../../services/projectApi";
+import { EMPTY_CREATE_FORM } from "../../shared/constants";
+import { toApiDateTime } from "../../shared/utils";
+import { useNotification } from "../../../notification/notificationContext";
 
 /**
  * Project creation form view rendered on the right side of the workspace.

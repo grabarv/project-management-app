@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { deleteTask } from "../../../services/taskApi";
-import { useNotification } from "../../notification/notificationContext";
+import { deleteTask } from "../../../../services/taskApi";
+import { useNotification } from "../../../notification/notificationContext";
 
 /**
  * Confirmation modal for destructive task deletion.

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import ProjectDeleteConfirmModal from "./ProjectDeleteConfirmModal";
-import TaskDetailsDrawer from "./TaskDetailsDrawer";
-import WorkspaceUpdateTaskForm from "./WorkspaceUpdateTaskForm";
+import ProjectDeleteConfirmModal from "../projects/ProjectDeleteConfirmModal";
+import TaskDetailsDrawer from "../tasks/TaskDetailsDrawer";
+import WorkspaceUpdateTaskForm from "../tasks/WorkspaceUpdateTaskForm";
 import ProjectDetailsContent from "./ProjectDetailsContent";
-import { useWorkspaceDetailsState } from "../useWorkspaceDetailsState";
+import { useWorkspaceDetailsState } from "../../hooks/useWorkspaceDetailsState";
 
 /**
  * Right-side project details view with creator-only delete action.

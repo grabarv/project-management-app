@@ -1,4 +1,4 @@
-import { formatDate } from "../utils";
+import { formatDate } from "../../shared/utils";
 
 /**
  * Reusable task table section used for both "My Tasks" and "Others' Tasks".

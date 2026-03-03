@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { formatDate } from "../utils";
-import { toggleTaskDone } from "../../../services/taskApi";
+import { formatDate } from "../../shared/utils";
+import { toggleTaskDone } from "../../../../services/taskApi";
 
 /**
  * Task details view shown in place of project details.

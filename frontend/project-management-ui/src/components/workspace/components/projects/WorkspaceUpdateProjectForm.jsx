@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { updateProject } from "../../../services/projectApi";
-import { toApiDateTime } from "../utils";
-import { useNotification } from "../../notification/notificationContext";
+import { updateProject } from "../../../../services/projectApi";
+import { toApiDateTime } from "../../shared/utils";
+import { useNotification } from "../../../notification/notificationContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);

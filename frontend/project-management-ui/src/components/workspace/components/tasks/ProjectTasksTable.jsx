@@ -1,8 +1,8 @@
 import { useState } from "react";
 import TaskDeleteConfirmModal from "./TaskDeleteConfirmModal";
 import TaskTableSection from "./TaskTableSection";
-import { useProjectTasks } from "../useProjectTasks";
-import { useTaskTableFilters } from "../useTaskTableFilters";
+import { useProjectTasks } from "../../hooks/useProjectTasks";
+import { useTaskTableFilters } from "../../hooks/useTaskTableFilters";
 
 /**
  * Read-only task table shown under selected project details.

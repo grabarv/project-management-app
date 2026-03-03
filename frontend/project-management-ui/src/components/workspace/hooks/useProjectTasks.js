@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchProjectTasks } from "../../services/taskApi";
+import { fetchProjectTasks } from "../../../services/taskApi";
 
 /**
  * Loads project tasks for the current user and exposes common derived groups.
