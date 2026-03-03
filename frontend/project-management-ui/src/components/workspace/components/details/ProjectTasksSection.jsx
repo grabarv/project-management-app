@@ -8,27 +8,12 @@ import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
  */
 export default function ProjectTasksSection() {
   const { isCreator } = useWorkspaceContext();
-  const {
-    isCreateTaskOpen,
-    handleTaskCreated,
-    closeCreateTask,
-    openTaskDetails,
-    openTaskEdit,
-    handleTaskDeleted,
-    tasksRefreshKey,
-  } = useWorkspaceDetailsContext();
+  const { isCreateTaskOpen } = useWorkspaceDetailsContext();
 
   return (
     <>
-      {isCreator && isCreateTaskOpen && (
-        <WorkspaceCreateTaskForm onTaskCreated={handleTaskCreated} onCancel={closeCreateTask} />
-      )}
-      <ProjectTasksTable
-        onTaskSelect={openTaskDetails}
-        onTaskEdit={openTaskEdit}
-        onTaskDeleted={handleTaskDeleted}
-        refreshKey={tasksRefreshKey}
-      />
+      {isCreator && isCreateTaskOpen && <WorkspaceCreateTaskForm />}
+      <ProjectTasksTable />
     </>
   );
 }

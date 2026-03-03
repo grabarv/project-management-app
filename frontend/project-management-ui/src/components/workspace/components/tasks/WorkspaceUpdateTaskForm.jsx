@@ -3,6 +3,7 @@ import { updateTask } from "../../../../services/taskApi";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);
@@ -16,8 +17,9 @@ function toDateInputValue(value) {
 /**
  * Creator-only form for updating an existing task.
  */
-export default function WorkspaceUpdateTaskForm({ task, onTaskUpdated, onCancel }) {
+export default function WorkspaceUpdateTaskForm() {
   const { currentUser, selectedProject } = useWorkspaceContext();
+  const { selectedTask: task, handleTaskUpdated, closeTaskView } = useWorkspaceDetailsContext();
   const [formData, setFormData] = useState({
     name: task?.name ?? "",
     description: task?.description ?? "",
@@ -97,7 +99,7 @@ export default function WorkspaceUpdateTaskForm({ task, onTaskUpdated, onCancel 
     }
 
     showSuccess("Task updated.");
-    await onTaskUpdated(result.data);
+    await handleTaskUpdated(result.data);
     setIsSubmitting(false);
   };
 
@@ -105,7 +107,7 @@ export default function WorkspaceUpdateTaskForm({ task, onTaskUpdated, onCancel 
     <article className="task-details-view" aria-label="Update task">
       <div className="task-details-header">
         <h3>Update Task</h3>
-        <button type="button" className="neutral" onClick={onCancel}>
+        <button type="button" className="neutral" onClick={closeTaskView}>
           Back to project
         </button>
       </div>
@@ -153,7 +155,7 @@ export default function WorkspaceUpdateTaskForm({ task, onTaskUpdated, onCancel 
         />
 
         <div className="create-project-actions">
-          <button type="button" className="neutral" onClick={onCancel} disabled={isSubmitting}>
+          <button type="button" className="neutral" onClick={closeTaskView} disabled={isSubmitting}>
             Cancel
           </button>
           <button type="submit" disabled={isSubmitting}>

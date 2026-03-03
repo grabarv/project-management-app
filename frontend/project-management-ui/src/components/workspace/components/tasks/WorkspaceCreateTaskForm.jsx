@@ -3,6 +3,7 @@ import { createProjectTask } from "../../../../services/taskApi";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);
@@ -14,10 +15,11 @@ function toDateInputValue(value) {
 }
 
 /**
- * Creator-only form for creating tasks assigned to other users in the current project.
+ * Creator-only form for creating tasks assigned to users in the current project.
  */
-export default function WorkspaceCreateTaskForm({ onTaskCreated, onCancel }) {
+export default function WorkspaceCreateTaskForm() {
   const { currentUser, selectedProject } = useWorkspaceContext();
+  const { handleTaskCreated, closeCreateTask } = useWorkspaceDetailsContext();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -99,7 +101,7 @@ export default function WorkspaceCreateTaskForm({ onTaskCreated, onCancel }) {
     }
 
     showSuccess("Task created.");
-    await onTaskCreated(result.data);
+    await handleTaskCreated(result.data);
     setIsSubmitting(false);
   };
 
@@ -151,7 +153,7 @@ export default function WorkspaceCreateTaskForm({ onTaskCreated, onCancel }) {
           />
 
           <div className="create-project-actions">
-            <button type="button" className="neutral" onClick={onCancel} disabled={isSubmitting}>
+            <button type="button" className="neutral" onClick={closeCreateTask} disabled={isSubmitting}>
               Cancel
             </button>
             <button type="submit" disabled={isSubmitting}>

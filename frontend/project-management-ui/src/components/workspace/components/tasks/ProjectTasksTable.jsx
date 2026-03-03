@@ -4,17 +4,20 @@ import TaskTableSection from "./TaskTableSection";
 import { useProjectTasks } from "../../hooks/useProjectTasks";
 import { useTaskTableFilters } from "../../hooks/useTaskTableFilters";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
 /**
  * Read-only task table shown under selected project details.
  */
-export default function ProjectTasksTable({ onTaskSelect, onTaskEdit, onTaskDeleted, refreshKey = 0 }) {
+export default function ProjectTasksTable() {
   const { currentUser, selectedProject } = useWorkspaceContext();
+  const { openTaskDetails, openTaskEdit, tasksRefreshKey } =
+    useWorkspaceDetailsContext();
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
   const { myTasks, otherUsersTasks, isLoading, errorMessage } = useProjectTasks(
     currentUser,
     selectedProject,
-    refreshKey
+    tasksRefreshKey
   );
   const {
     showOnlyNotDone,
@@ -47,7 +50,7 @@ export default function ProjectTasksTable({ onTaskSelect, onTaskEdit, onTaskDele
           }))
         }
         showAssignedBy
-        onTaskSelect={onTaskSelect}
+        onTaskSelect={openTaskDetails}
       />
 
       {isCreator && (
@@ -69,8 +72,8 @@ export default function ProjectTasksTable({ onTaskSelect, onTaskEdit, onTaskDele
           showEditAction
           showDeleteAction
           panelClassName="project-tasks-panel-secondary"
-          onTaskSelect={onTaskSelect}
-          onTaskEdit={onTaskEdit}
+          onTaskSelect={openTaskDetails}
+          onTaskEdit={openTaskEdit}
           onTaskDelete={handleDeleteTaskClick}
         />
       )}
@@ -80,7 +83,6 @@ export default function ProjectTasksTable({ onTaskSelect, onTaskEdit, onTaskDele
           taskId={taskPendingDelete.id}
           taskName={taskPendingDelete.name}
           onClose={() => setTaskPendingDelete(null)}
-          onDeleted={onTaskDeleted}
         />
       )}
     </>

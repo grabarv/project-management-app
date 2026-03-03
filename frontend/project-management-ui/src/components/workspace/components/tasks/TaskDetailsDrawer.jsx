@@ -2,12 +2,14 @@ import { useState } from "react";
 import { formatDate } from "../../shared/utils";
 import { toggleTaskDone } from "../../../../services/taskApi";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
 /**
  * Task details view shown in place of project details.
  */
-export default function TaskDetailsDrawer({ task, onClose, onTaskUpdated }) {
+export default function TaskDetailsDrawer() {
   const { currentUser } = useWorkspaceContext();
+  const { selectedTask: task, closeTaskView, handleTaskUpdated } = useWorkspaceDetailsContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -33,7 +35,7 @@ export default function TaskDetailsDrawer({ task, onClose, onTaskUpdated }) {
       return;
     }
 
-    onTaskUpdated?.(result.data);
+    handleTaskUpdated(result.data);
     setIsSubmitting(false);
   };
 
@@ -41,7 +43,7 @@ export default function TaskDetailsDrawer({ task, onClose, onTaskUpdated }) {
     <article className="task-details-view" aria-label="Task details">
       <div className="task-details-header">
         <h3>Task Details</h3>
-        <button type="button" className="neutral" onClick={onClose}>
+        <button type="button" className="neutral" onClick={closeTaskView}>
           Back to project
         </button>
       </div>

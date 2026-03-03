@@ -2,12 +2,14 @@ import { useState } from "react";
 import { deleteTask } from "../../../../services/taskApi";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 
 /**
  * Confirmation modal for destructive task deletion.
  */
-export default function TaskDeleteConfirmModal({ taskId, taskName, onClose, onDeleted }) {
+export default function TaskDeleteConfirmModal({ taskId, taskName, onClose }) {
   const { currentUser } = useWorkspaceContext();
+  const { handleTaskDeleted } = useWorkspaceDetailsContext();
   const [isDeleting, setIsDeleting] = useState(false);
   const { showError, showSuccess } = useNotification();
 
@@ -27,7 +29,7 @@ export default function TaskDeleteConfirmModal({ taskId, taskName, onClose, onDe
     }
 
     showSuccess("Task deleted.");
-    await onDeleted?.();
+    await handleTaskDeleted();
     setIsDeleting(false);
     onClose();
   };
