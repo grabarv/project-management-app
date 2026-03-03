@@ -9,14 +9,21 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
 {
     public async Task<IReadOnlyList<ProjectResponse>> GetAllAsync(int currentUserId)
     {
-        return await db.Projects
+        var projects = await db.Projects
             .AsNoTracking()
             .Include(project => project.ParticipatingUsers)
+            .Include(project => project.Invitations)
+                .ThenInclude(invitation => invitation.InvitedUser)
+            .Include(project => project.Invitations)
+                .ThenInclude(invitation => invitation.InvitedByUser)
             .Where(project =>
                 project.CreatedByUserId == currentUserId ||
                 project.ParticipatingUsers.Any(user => user.Id == currentUserId))
-            .Select(project => ToResponse(project))
             .ToListAsync();
+
+        return projects
+            .Select(project => ToResponse(project, currentUserId))
+            .ToList();
     }
 
     public async Task<OperationResult<ProjectResponse>> GetByIdAsync(int id, int currentUserId)
@@ -24,6 +31,10 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         var project = await db.Projects
             .AsNoTracking()
             .Include(p => p.ParticipatingUsers)
+            .Include(p => p.Invitations)
+                .ThenInclude(invitation => invitation.InvitedUser)
+            .Include(p => p.Invitations)
+                .ThenInclude(invitation => invitation.InvitedByUser)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project is null)
@@ -36,7 +47,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(403, "You do not have access to this project");
         }
 
-        return OperationResult<ProjectResponse>.Ok(ToResponse(project));
+        return OperationResult<ProjectResponse>.Ok(ToResponse(project, currentUserId));
     }
 
     public async Task<OperationResult<ProjectResponse>> CreateAsync(CreateProjectRequest request, int currentUserId)
@@ -80,7 +91,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         db.Projects.Add(project);
         await db.SaveChangesAsync();
 
-        return OperationResult<ProjectResponse>.Created(ToResponse(project));
+        return OperationResult<ProjectResponse>.Created(ToResponse(project, currentUserId));
     }
 
     public async Task<OperationResult<ProjectResponse>> UpdateAsync(int id, UpdateProjectRequest request, int currentUserId)
@@ -120,7 +131,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
 
         await db.SaveChangesAsync();
 
-        return OperationResult<ProjectResponse>.Ok(ToResponse(project));
+        return OperationResult<ProjectResponse>.Ok(ToResponse(project, currentUserId));
     }
 
     public async Task<OperationResult<bool>> DeleteAsync(int id, int currentUserId)
@@ -141,7 +152,7 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
         return OperationResult<bool>.Ok(true);
     }
 
-    private static ProjectResponse ToResponse(AppProject project)
+    private static ProjectResponse ToResponse(AppProject project, int currentUserId)
     {
         return new ProjectResponse(
             project.Id,
@@ -154,7 +165,21 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             project.ParticipatingUsers
                 .OrderBy(user => user.Username)
                 .Select(user => new ProjectParticipantResponse(user.Id, user.Username))
-                .ToList());
+                .ToList(),
+            project.CreatedByUserId == currentUserId
+                ? project.Invitations
+                    .OrderByDescending(invitation => invitation.CreatedAtUtc)
+                    .Select(invitation => new ProjectInvitationSummaryResponse(
+                        invitation.Id,
+                        invitation.InvitedUserId,
+                        invitation.InvitedUser.Username,
+                        invitation.InvitedByUserId,
+                        invitation.InvitedByUser.Username,
+                        invitation.Status,
+                        invitation.CreatedAtUtc,
+                        invitation.RespondedAtUtc))
+                    .ToList()
+                : []);
     }
 
     private static DateTime EnsureUtc(DateTime dateTime)

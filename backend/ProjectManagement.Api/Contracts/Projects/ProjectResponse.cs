@@ -8,4 +8,5 @@ public record ProjectResponse(
     DateTime DueDateUtc,
     int CreatedByUserId,
     List<int> ParticipatingUserIds,
-    List<ProjectParticipantResponse> ParticipatingUsers);
+    List<ProjectParticipantResponse> ParticipatingUsers,
+    List<ProjectInvitationSummaryResponse> Invitations);
