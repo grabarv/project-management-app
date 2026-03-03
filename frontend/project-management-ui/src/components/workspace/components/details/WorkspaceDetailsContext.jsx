@@ -14,6 +14,7 @@ export function WorkspaceDetailsProvider({ children, selectedProject }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWorkspaceDetailsContext() {
   const context = useContext(WorkspaceDetailsContext);
 
