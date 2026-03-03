@@ -20,31 +20,59 @@ export default function ReceivedInvitationsPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeInvitationId, setActiveInvitationId] = useState(null);
 
-  const loadInvitations = useCallback(async () => {
+  const loadInvitations = useCallback(async ({ silent = false } = {}) => {
     if (!currentUser?.userId) {
       setInvitations([]);
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
+    if (!silent) {
+      setIsLoading(true);
+    }
 
     const result = await fetchReceivedProjectInvitations(currentUser.userId);
     if (!result.ok) {
       setInvitations([]);
-      showError(result.message || "Failed to load invitations");
+      if (!silent) {
+        showError(result.message || "Failed to load invitations");
+      }
       setIsLoading(false);
       return;
     }
 
     setInvitations(result.data);
-    setIsLoading(false);
+    if (!silent) {
+      setIsLoading(false);
+    }
   }, [currentUser, showError]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadInvitations();
   }, [loadInvitations]);
+
+  useEffect(() => {
+    if (!currentUser?.userId) {
+      return undefined;
+    }
+
+    // Keep invitation list fresh so new invites appear without reloading the app.
+    const intervalId = window.setInterval(() => {
+      loadInvitations({ silent: true });
+    }, 5000);
+
+    const handleWindowFocus = () => {
+      loadInvitations({ silent: true });
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleWindowFocus);
+    };
+  }, [currentUser?.userId, loadInvitations]);
 
   const handleInvitationAction = async (invitationId, action) => {
     if (!currentUser?.userId) {
@@ -66,7 +94,7 @@ export default function ReceivedInvitationsPanel() {
     }
 
     showSuccess(action === "accept" ? "Invitation accepted." : "Invitation declined.");
-    await Promise.all([reloadProjects(), loadInvitations()]);
+    await Promise.all([reloadProjects({ silent: true }), loadInvitations({ silent: true })]);
     setActiveInvitationId(null);
   };
 

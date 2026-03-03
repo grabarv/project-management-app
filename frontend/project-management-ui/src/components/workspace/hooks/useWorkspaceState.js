@@ -10,25 +10,31 @@ export function useWorkspaceState(currentUser, showError) {
   const [activePanel, setActivePanel] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadProjects = useCallback(async () => {
+  const loadProjects = useCallback(async ({ silent = false } = {}) => {
     if (!currentUser?.userId) {
       setProjects([]);
       setIsLoading(false);
       return false;
     }
 
-    setIsLoading(true);
+    if (!silent) {
+      setIsLoading(true);
+    }
 
     const result = await fetchProjects(currentUser.userId);
     if (!result.ok) {
       setProjects([]);
-      showError(result.message || "Failed to load projects");
+      if (!silent) {
+        showError(result.message || "Failed to load projects");
+      }
       setIsLoading(false);
       return false;
     }
 
     setProjects(result.data);
-    setIsLoading(false);
+    if (!silent) {
+      setIsLoading(false);
+    }
     return true;
   }, [currentUser, showError]);
 
@@ -36,6 +42,28 @@ export function useWorkspaceState(currentUser, showError) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadProjects();
   }, [loadProjects]);
+
+  useEffect(() => {
+    if (!currentUser?.userId) {
+      return undefined;
+    }
+
+    // Poll workspace data so invitations/participants update without a manual reload.
+    const intervalId = window.setInterval(() => {
+      loadProjects({ silent: true });
+    }, 5000);
+
+    const handleWindowFocus = () => {
+      loadProjects({ silent: true });
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleWindowFocus);
+    };
+  }, [currentUser?.userId, loadProjects]);
 
   const userProjects = useMemo(() => {
     if (!currentUser?.userId) {
