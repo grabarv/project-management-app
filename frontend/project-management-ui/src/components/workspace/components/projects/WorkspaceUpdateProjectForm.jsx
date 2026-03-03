@@ -1,17 +1,8 @@
 import { useMemo, useState } from "react";
 import { updateProject } from "../../../../services/projectApi";
-import { toApiDateTime } from "../../shared/utils";
+import { toApiDateTime, toDateInputValue } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
-
-function toDateInputValue(value) {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
-
-  return parsed.toISOString().slice(0, 10);
-}
 
 /**
  * Project update form rendered in the right panel for the selected project.

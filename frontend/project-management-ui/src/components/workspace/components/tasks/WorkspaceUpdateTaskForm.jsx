@@ -1,18 +1,10 @@
 import { useMemo, useState } from "react";
 import { updateTask } from "../../../../services/taskApi";
-import { toApiDateTime } from "../../shared/utils";
+import { isValidDateInputValue, toApiDateTime, toDateInputValue } from "../../shared/utils";
+import { buildAssignableUsers } from "../../shared/taskUtils";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
-
-function toDateInputValue(value) {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
-
-  return parsed.toISOString().slice(0, 10);
-}
 
 /**
  * Creator-only form for updating an existing task.
@@ -30,16 +22,10 @@ export default function WorkspaceUpdateTaskForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError, showSuccess } = useNotification();
 
-  const assignableUsers = useMemo(() => {
-    const participants = selectedProject?.participatingUsers ?? [];
-    const current = currentUser?.userId
-      ? [{ id: currentUser.userId, username: `${currentUser.username} (You)` }]
-      : [];
-
-    return [...current, ...participants]
-      .filter((user, index, array) => array.findIndex((item) => item.id === user.id) === index)
-      .sort((a, b) => a.username.localeCompare(b.username));
-  }, [selectedProject, currentUser]);
+  const assignableUsers = useMemo(
+    () => buildAssignableUsers(selectedProject, currentUser),
+    [selectedProject, currentUser]
+  );
 
   const createdAtMinDate = useMemo(() => toDateInputValue(task?.createdAtUtc), [task]);
 
@@ -63,7 +49,7 @@ export default function WorkspaceUpdateTaskForm() {
       showError("Choose a user to assign the task to.");
       return;
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.dueDate)) {
+    if (!isValidDateInputValue(formData.dueDate)) {
       showError("Please provide the date in a valid format.");
       return;
     }

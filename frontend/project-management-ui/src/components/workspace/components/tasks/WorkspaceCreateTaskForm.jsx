@@ -1,18 +1,10 @@
 import { useMemo, useState } from "react";
 import { createProjectTask } from "../../../../services/taskApi";
-import { toApiDateTime } from "../../shared/utils";
+import { isValidDateInputValue, toApiDateTime, toDateInputValue } from "../../shared/utils";
+import { buildAssignableUsers } from "../../shared/taskUtils";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
-
-function toDateInputValue(value) {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
-
-  return parsed.toISOString().slice(0, 10);
-}
 
 /**
  * Creator-only form for creating tasks assigned to users in the current project.
@@ -30,16 +22,7 @@ export default function WorkspaceCreateTaskForm() {
   const { showError, showSuccess } = useNotification();
 
   const assignableUsers = useMemo(
-    () => {
-      const participants = selectedProject?.participatingUsers ?? [];
-      const creator = currentUser?.userId
-        ? [{ id: currentUser.userId, username: `${currentUser.username} (You)` }]
-        : [];
-
-      return [...creator, ...participants]
-        .filter((user, index, array) => array.findIndex((item) => item.id === user.id) === index)
-        .sort((a, b) => a.username.localeCompare(b.username));
-    },
+    () => buildAssignableUsers(selectedProject, currentUser),
     [selectedProject, currentUser]
   );
 
@@ -71,7 +54,7 @@ export default function WorkspaceCreateTaskForm() {
       showError("Please provide a valid due date.");
       return;
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.dueDate)) {
+    if (!isValidDateInputValue(formData.dueDate)) {
       showError("Please provide the date in a valid format.");
       return;
     }
