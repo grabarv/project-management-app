@@ -139,7 +139,6 @@ export default function Workspace({ currentUser }) {
         <WorkspaceDetails
           currentUser={currentUser}
           selectedProject={selectedProject}
-          isCreator={isCreator}
           onProjectDeleted={handleProjectDeleted}
           onStartUpdateProject={handleStartUpdateProject}
         />
