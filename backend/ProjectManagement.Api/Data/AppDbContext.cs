@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<AppUser> Users => Set<AppUser>();
     public DbSet<AppProject> Projects => Set<AppProject>();
+    public DbSet<AppProjectInvitation> ProjectInvitations => Set<AppProjectInvitation>();
     public DbSet<AppTask> Tasks => Set<AppTask>();
 
     public override int SaveChanges()
@@ -67,11 +68,40 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsRequired()
             .HasMaxLength(50);
 
+        modelBuilder.Entity<AppProjectInvitation>()
+            .Property(invitation => invitation.Status)
+            .IsRequired()
+            .HasMaxLength(50);
+
         modelBuilder.Entity<AppProject>()
             .HasOne(project => project.CreatedByUser)
             .WithMany(user => user.CreatedProjects)
             .HasForeignKey(project => project.CreatedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AppProjectInvitation>()
+            .HasOne(invitation => invitation.Project)
+            .WithMany(project => project.Invitations)
+            .HasForeignKey(invitation => invitation.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AppProjectInvitation>()
+            .HasOne(invitation => invitation.InvitedUser)
+            .WithMany(user => user.ReceivedProjectInvitations)
+            .HasForeignKey(invitation => invitation.InvitedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AppProjectInvitation>()
+            .HasOne(invitation => invitation.InvitedByUser)
+            .WithMany(user => user.SentProjectInvitations)
+            .HasForeignKey(invitation => invitation.InvitedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Allow only one pending invitation per project/user pair.
+        modelBuilder.Entity<AppProjectInvitation>()
+            .HasIndex(invitation => new { invitation.ProjectId, invitation.InvitedUserId })
+            .HasFilter("\"Status\" = 'Pending'")
+            .IsUnique();
 
         modelBuilder.Entity<AppTask>()
             .HasOne(task => task.Project)

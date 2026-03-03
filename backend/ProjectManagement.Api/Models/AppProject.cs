@@ -12,5 +12,6 @@ public class AppProject
     public AppUser CreatedByUser { get; set; } = null!;
 
     public ICollection<AppUser> ParticipatingUsers { get; set; } = new List<AppUser>();
+    public ICollection<AppProjectInvitation> Invitations { get; set; } = new List<AppProjectInvitation>();
     public ICollection<AppTask> Tasks { get; set; } = new List<AppTask>();
 }
