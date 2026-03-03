@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { updateTask } from "../../../../services/taskApi";
-import { isValidDateInputValue, toApiDateTime, toDateInputValue } from "../../shared/utils";
+import { toDateInputValue } from "../../shared/utils";
+import { requireCurrentUserId, getValidatedDueDateUtc } from "../../shared/formValidation";
 import { buildAssignableUsers } from "../../shared/taskUtils";
+import { useObjectForm } from "../../hooks/useObjectForm";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
@@ -12,7 +14,7 @@ import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
 export default function WorkspaceUpdateTaskForm() {
   const { currentUser, selectedProject } = useWorkspaceContext();
   const { selectedTask: task, handleTaskUpdated, closeTaskView } = useWorkspaceDetailsContext();
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useObjectForm({
     name: task?.name ?? "",
     description: task?.description ?? "",
     dueDate: toDateInputValue(task?.dueDateUtc),
@@ -29,11 +31,6 @@ export default function WorkspaceUpdateTaskForm() {
 
   const createdAtMinDate = useMemo(() => toDateInputValue(task?.createdAtUtc), [task]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -41,26 +38,21 @@ export default function WorkspaceUpdateTaskForm() {
       showError("Select a task first.");
       return;
     }
-    if (!currentUser?.userId) {
-      showError("Missing user information. Please sign in again.");
+    const currentUserId = requireCurrentUserId(currentUser, showError);
+    if (!currentUserId) {
       return;
     }
     if (!formData.assignedToUserId) {
       showError("Choose a user to assign the task to.");
       return;
     }
-    if (!isValidDateInputValue(formData.dueDate)) {
-      showError("Please provide the date in a valid format.");
-      return;
-    }
-
-    const dueDateUtc = toApiDateTime(formData.dueDate);
+    const dueDateUtc = getValidatedDueDateUtc({
+      rawValue: formData.dueDate,
+      minDate: createdAtMinDate,
+      showError,
+      requireDateInputFormat: true,
+    });
     if (!dueDateUtc) {
-      showError("Please provide a valid due date.");
-      return;
-    }
-    if (createdAtMinDate && formData.dueDate < createdAtMinDate) {
-      showError("Due date cannot be earlier than creation date.");
       return;
     }
 
@@ -75,7 +67,7 @@ export default function WorkspaceUpdateTaskForm() {
         dueDateUtc,
         assignedToUserId: Number(formData.assignedToUserId),
       },
-      currentUser.userId
+      currentUserId
     );
 
     if (!result.ok) {

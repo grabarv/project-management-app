@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { updateProject } from "../../../../services/projectApi";
-import { toApiDateTime, toDateInputValue } from "../../shared/utils";
+import { toDateInputValue } from "../../shared/utils";
+import { requireCurrentUserId, getValidatedDueDateUtc } from "../../shared/formValidation";
+import { useObjectForm } from "../../hooks/useObjectForm";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 
@@ -13,7 +15,7 @@ export default function WorkspaceUpdateProjectForm() {
     selectedProject,
     actions: { cancelPanel, handleProjectUpdated },
   } = useWorkspaceContext();
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useObjectForm({
     name: selectedProject?.name ?? "",
     description: selectedProject?.description ?? "",
     dueDate: toDateInputValue(selectedProject?.dueDateUtc),
@@ -26,11 +28,6 @@ export default function WorkspaceUpdateProjectForm() {
     [selectedProject]
   );
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -38,18 +35,17 @@ export default function WorkspaceUpdateProjectForm() {
       showError("Select a project first.");
       return;
     }
-    if (!currentUser?.userId) {
-      showError("Missing user information. Please sign in again.");
+    const currentUserId = requireCurrentUserId(currentUser, showError);
+    if (!currentUserId) {
       return;
     }
 
-    const dueDateUtc = toApiDateTime(formData.dueDate);
+    const dueDateUtc = getValidatedDueDateUtc({
+      rawValue: formData.dueDate,
+      minDate: createdAtMinDate,
+      showError,
+    });
     if (!dueDateUtc) {
-      showError("Please provide a valid due date.");
-      return;
-    }
-    if (createdAtMinDate && formData.dueDate < createdAtMinDate) {
-      showError("Due date cannot be earlier than creation date.");
       return;
     }
 
@@ -63,7 +59,7 @@ export default function WorkspaceUpdateProjectForm() {
         dueDateUtc,
         participatingUserIds: selectedProject.participatingUserIds ?? [],
       },
-      currentUser.userId
+      currentUserId
     );
 
     if (!result.ok) {

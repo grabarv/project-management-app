@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { createProject } from "../../../../services/projectApi";
 import { EMPTY_CREATE_FORM } from "../../shared/constants";
-import { toApiDateTime } from "../../shared/utils";
+import { requireCurrentUserId, getValidatedDueDateUtc } from "../../shared/formValidation";
+import { useObjectForm } from "../../hooks/useObjectForm";
 import { useNotification } from "../../../notification/notificationContext";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 
@@ -14,32 +15,26 @@ export default function WorkspaceCreateProjectForm() {
     currentUser,
     actions: { cancelPanel, handleProjectCreated },
   } = useWorkspaceContext();
-  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
+  const { formData, setFormData, handleChange } = useObjectForm(EMPTY_CREATE_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError, showSuccess } = useNotification();
 
   const todayDateString = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-  const handleCreateChange = (event) => {
-    const { name, value } = event.target;
-    setCreateForm((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleCreateSubmit = async (event) => {
     event.preventDefault();
 
-    if (!currentUser?.userId) {
-      showError("Missing user information. Please sign in again.");
+    const currentUserId = requireCurrentUserId(currentUser, showError);
+    if (!currentUserId) {
       return;
     }
 
-    const dueDateUtc = toApiDateTime(createForm.dueDate);
+    const dueDateUtc = getValidatedDueDateUtc({
+      rawValue: formData.dueDate,
+      minDate: todayDateString,
+      showError,
+    });
     if (!dueDateUtc) {
-      showError("Please provide a valid due date.");
-      return;
-    }
-    if (createForm.dueDate < todayDateString) {
-      showError("Due date cannot be earlier than creation date.");
       return;
     }
 
@@ -48,13 +43,13 @@ export default function WorkspaceCreateProjectForm() {
     // Only creator is assigned initially; participants can be managed later.
     const result = await createProject(
       {
-        name: createForm.name.trim(),
-        description: createForm.description.trim(),
+        name: formData.name.trim(),
+        description: formData.description.trim(),
         dueDateUtc,
-        createdByUserId: currentUser.userId,
+        createdByUserId: currentUserId,
         participatingUserIds: [],
       },
-      currentUser.userId
+      currentUserId
     );
 
     if (!result.ok) {
@@ -63,7 +58,7 @@ export default function WorkspaceCreateProjectForm() {
       return;
     }
 
-    setCreateForm(EMPTY_CREATE_FORM);
+    setFormData(EMPTY_CREATE_FORM);
     showSuccess("Project created.");
     await handleProjectCreated(result.data?.id ?? null);
     setIsSubmitting(false);
@@ -81,23 +76,23 @@ export default function WorkspaceCreateProjectForm() {
             name="name"
             placeholder="Project name"
             required
-            value={createForm.name}
-            onChange={handleCreateChange}
+            value={formData.name}
+            onChange={handleChange}
           />
           <textarea
             name="description"
             placeholder="Description"
             required
-            value={createForm.description}
-            onChange={handleCreateChange}
+            value={formData.description}
+            onChange={handleChange}
           />
           <input
             type="date"
             name="dueDate"
             required
             min={todayDateString}
-            value={createForm.dueDate}
-            onChange={handleCreateChange}
+            value={formData.dueDate}
+            onChange={handleChange}
           />
 
           <div className="create-project-actions">
