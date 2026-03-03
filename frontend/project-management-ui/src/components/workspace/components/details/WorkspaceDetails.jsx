@@ -1,16 +1,13 @@
 import { useWorkspaceDetailsState } from "../../hooks/useWorkspaceDetailsState";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 import WorkspaceProjectContent from "./WorkspaceProjectContent";
 import WorkspaceTaskContent from "./WorkspaceTaskContent";
 
 /**
  * Right-side project details view with creator-only delete action.
  */
-export default function WorkspaceDetails({
-  currentUser,
-  selectedProject,
-  onProjectDeleted,
-  onStartUpdateProject,
-}) {
+export default function WorkspaceDetails() {
+  const { selectedProject } = useWorkspaceContext();
   const {
     selectedTask,
     taskViewMode,
@@ -47,8 +44,6 @@ export default function WorkspaceDetails({
         </div>
       ) : selectedTask ? (
         <WorkspaceTaskContent
-          currentUser={currentUser}
-          selectedProject={selectedProject}
           selectedTask={selectedTask}
           taskViewMode={taskViewMode}
           onTaskUpdated={handleTaskUpdated}
@@ -56,10 +51,6 @@ export default function WorkspaceDetails({
         />
       ) : (
         <WorkspaceProjectContent
-          currentUser={currentUser}
-          selectedProject={selectedProject}
-          onProjectDeleted={onProjectDeleted}
-          onStartUpdateProject={onStartUpdateProject}
           taskControls={taskControls}
         />
       )}

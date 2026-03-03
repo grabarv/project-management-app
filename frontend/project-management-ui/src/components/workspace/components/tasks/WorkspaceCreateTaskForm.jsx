@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createProjectTask } from "../../../../services/taskApi";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);
@@ -15,12 +16,8 @@ function toDateInputValue(value) {
 /**
  * Creator-only form for creating tasks assigned to other users in the current project.
  */
-export default function WorkspaceCreateTaskForm({
-  currentUser,
-  selectedProject,
-  onTaskCreated,
-  onCancel,
-}) {
+export default function WorkspaceCreateTaskForm({ onTaskCreated, onCancel }) {
+  const { currentUser, selectedProject } = useWorkspaceContext();
   const [formData, setFormData] = useState({
     name: "",
     description: "",

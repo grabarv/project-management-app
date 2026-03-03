@@ -1,17 +1,18 @@
 import TaskDetailsDrawer from "../tasks/TaskDetailsDrawer";
 import WorkspaceUpdateTaskForm from "../tasks/WorkspaceUpdateTaskForm";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Selected-task branch of the workspace details panel.
  */
 export default function WorkspaceTaskContent({
-  currentUser,
-  selectedProject,
   selectedTask,
   taskViewMode,
   onTaskUpdated,
   onCloseTaskView,
 }) {
+  const { selectedProject } = useWorkspaceContext();
+
   if (!selectedTask) {
     return null;
   }
@@ -19,8 +20,6 @@ export default function WorkspaceTaskContent({
   if (taskViewMode === "edit") {
     return (
       <WorkspaceUpdateTaskForm
-        currentUser={currentUser}
-        selectedProject={selectedProject}
         task={selectedTask}
         onTaskUpdated={onTaskUpdated}
         onCancel={onCloseTaskView}
@@ -31,7 +30,6 @@ export default function WorkspaceTaskContent({
   return (
     <TaskDetailsDrawer
       task={selectedTask}
-      currentUser={currentUser}
       onClose={onCloseTaskView}
       onTaskUpdated={onTaskUpdated}
     />

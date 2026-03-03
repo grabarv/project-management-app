@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { updateTask } from "../../../../services/taskApi";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);
@@ -15,13 +16,8 @@ function toDateInputValue(value) {
 /**
  * Creator-only form for updating an existing task.
  */
-export default function WorkspaceUpdateTaskForm({
-  currentUser,
-  selectedProject,
-  task,
-  onTaskUpdated,
-  onCancel,
-}) {
+export default function WorkspaceUpdateTaskForm({ task, onTaskUpdated, onCancel }) {
+  const { currentUser, selectedProject } = useWorkspaceContext();
   const [formData, setFormData] = useState({
     name: task?.name ?? "",
     description: task?.description ?? "",

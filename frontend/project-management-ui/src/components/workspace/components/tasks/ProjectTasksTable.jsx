@@ -3,18 +3,13 @@ import TaskDeleteConfirmModal from "./TaskDeleteConfirmModal";
 import TaskTableSection from "./TaskTableSection";
 import { useProjectTasks } from "../../hooks/useProjectTasks";
 import { useTaskTableFilters } from "../../hooks/useTaskTableFilters";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Read-only task table shown under selected project details.
  */
-export default function ProjectTasksTable({
-  currentUser,
-  selectedProject,
-  onTaskSelect,
-  onTaskEdit,
-  onTaskDeleted,
-  refreshKey = 0,
-}) {
+export default function ProjectTasksTable({ onTaskSelect, onTaskEdit, onTaskDeleted, refreshKey = 0 }) {
+  const { currentUser, selectedProject } = useWorkspaceContext();
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
   const { myTasks, otherUsersTasks, isLoading, errorMessage } = useProjectTasks(
     currentUser,
@@ -84,7 +79,6 @@ export default function ProjectTasksTable({
         <TaskDeleteConfirmModal
           taskId={taskPendingDelete.id}
           taskName={taskPendingDelete.name}
-          currentUser={currentUser}
           onClose={() => setTaskPendingDelete(null)}
           onDeleted={onTaskDeleted}
         />

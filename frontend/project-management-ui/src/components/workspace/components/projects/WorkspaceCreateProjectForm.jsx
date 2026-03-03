@@ -3,12 +3,17 @@ import { createProject } from "../../../../services/projectApi";
 import { EMPTY_CREATE_FORM } from "../../shared/constants";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Project creation form view rendered on the right side of the workspace.
  * Keeps form state local and reports success to parent via callback.
  */
-export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onProjectCreated }) {
+export default function WorkspaceCreateProjectForm() {
+  const {
+    currentUser,
+    actions: { cancelPanel, handleProjectCreated },
+  } = useWorkspaceContext();
   const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError, showSuccess } = useNotification();
@@ -60,7 +65,7 @@ export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onPr
 
     setCreateForm(EMPTY_CREATE_FORM);
     showSuccess("Project created.");
-    await onProjectCreated(result.data?.id ?? null);
+    await handleProjectCreated(result.data?.id ?? null);
     setIsSubmitting(false);
   };
 
@@ -96,7 +101,7 @@ export default function WorkspaceCreateProjectForm({ currentUser, onCancel, onPr
           />
 
           <div className="create-project-actions">
-            <button type="button" className="neutral" onClick={onCancel} disabled={isSubmitting}>
+            <button type="button" className="neutral" onClick={cancelPanel} disabled={isSubmitting}>
               Cancel
             </button>
             <button type="submit" disabled={isSubmitting}>

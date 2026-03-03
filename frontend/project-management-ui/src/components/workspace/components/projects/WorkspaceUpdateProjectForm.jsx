@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { updateProject } from "../../../../services/projectApi";
 import { toApiDateTime } from "../../shared/utils";
 import { useNotification } from "../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 function toDateInputValue(value) {
   const parsed = new Date(value);
@@ -15,12 +16,12 @@ function toDateInputValue(value) {
 /**
  * Project update form rendered in the right panel for the selected project.
  */
-export default function WorkspaceUpdateProjectForm({
-  currentUser,
-  selectedProject,
-  onCancel,
-  onProjectUpdated,
-}) {
+export default function WorkspaceUpdateProjectForm() {
+  const {
+    currentUser,
+    selectedProject,
+    actions: { cancelPanel, handleProjectUpdated },
+  } = useWorkspaceContext();
   const [formData, setFormData] = useState({
     name: selectedProject?.name ?? "",
     description: selectedProject?.description ?? "",
@@ -81,7 +82,7 @@ export default function WorkspaceUpdateProjectForm({
     }
 
     showSuccess("Project updated.");
-    await onProjectUpdated(selectedProject.id);
+    await handleProjectUpdated(selectedProject.id);
     setIsSubmitting(false);
   };
 
@@ -117,7 +118,7 @@ export default function WorkspaceUpdateProjectForm({
           />
 
           <div className="create-project-actions">
-            <button type="button" className="neutral" onClick={onCancel} disabled={isSubmitting}>
+            <button type="button" className="neutral" onClick={cancelPanel} disabled={isSubmitting}>
               Cancel
             </button>
             <button type="submit" disabled={isSubmitting}>

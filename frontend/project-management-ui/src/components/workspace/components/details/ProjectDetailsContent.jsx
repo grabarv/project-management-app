@@ -51,15 +51,11 @@ export default function ProjectDetailsContent({
       </div>
       {isCreator && isCreateTaskOpen && (
         <WorkspaceCreateTaskForm
-          currentUser={currentUser}
-          selectedProject={selectedProject}
           onTaskCreated={onTaskCreated}
           onCancel={onCancelCreateTask}
         />
       )}
       <ProjectTasksTable
-        currentUser={currentUser}
-        selectedProject={selectedProject}
         onTaskSelect={onTaskSelect}
         onTaskEdit={onTaskEdit}
         onTaskDeleted={onTaskDeleted}

@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { deleteProject } from "../../../../services/projectApi";
 import { useNotification } from "../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Confirmation modal for destructive project deletion.
  * Owns delete request state so parent components stay orchestration-focused.
  */
-export default function ProjectDeleteConfirmModal({
-  projectId,
-  projectName,
-  currentUser,
-  onClose,
-  onDeleted,
-}) {
+export default function ProjectDeleteConfirmModal({ projectId, projectName, onClose, onDeleted }) {
+  const { currentUser } = useWorkspaceContext();
   const [isDeleting, setIsDeleting] = useState(false);
   const { showError, showSuccess } = useNotification();
 

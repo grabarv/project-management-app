@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import "./workspace.css";
-import { fetchProjects } from "../../services/projectApi";
 import WorkspaceSidebar from "./components/sidebar/WorkspaceSidebar";
 import WorkspaceDetails from "./components/details/WorkspaceDetails";
 import WorkspaceCreateProjectForm from "./components/projects/WorkspaceCreateProjectForm";
 import WorkspaceUpdateProjectForm from "./components/projects/WorkspaceUpdateProjectForm";
-import { useNotification } from "../notification/notificationContext";
+import { WorkspaceProvider, useWorkspaceContext } from "./WorkspaceContext";
 
 /**
  * Workspace container:
@@ -13,136 +11,28 @@ import { useNotification } from "../notification/notificationContext";
  * - coordinates which right-side panel is active
  * - reacts to create/delete completion callbacks from child views
  */
-export default function Workspace({ currentUser }) {
-  const [projects, setProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [activePanel, setActivePanel] = useState("details");
-  const [isLoading, setIsLoading] = useState(true);
-  const { showError } = useNotification();
-
-  const loadProjects = useCallback(async () => {
-    if (!currentUser?.userId) {
-      setProjects([]);
-      setIsLoading(false);
-      return false;
-    }
-
-    setIsLoading(true);
-
-    const result = await fetchProjects(currentUser.userId);
-    if (!result.ok) {
-      setProjects([]);
-      showError(result.message || "Failed to load projects");
-      setIsLoading(false);
-      return false;
-    }
-
-    setProjects(result.data);
-    setIsLoading(false);
-    return true;
-  }, [currentUser, showError]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadProjects();
-  }, [loadProjects]);
-
-  const userProjects = useMemo(() => {
-    if (!currentUser?.userId) {
-      return [];
-    }
-
-    return projects.filter(
-      (project) =>
-        project.createdByUserId === currentUser.userId ||
-        project.participatingUserIds?.includes(currentUser.userId)
-    );
-  }, [projects, currentUser]);
-
-  const selectedProject = useMemo(
-    () => userProjects.find((project) => project.id === selectedProjectId) ?? null,
-    [userProjects, selectedProjectId]
-  );
-
-  const isCreator = selectedProject?.createdByUserId === currentUser?.userId;
-
-  const handleProjectCreated = useCallback(
-    async (projectId) => {
-      await loadProjects();
-      if (projectId) {
-        setSelectedProjectId(projectId);
-      }
-      setActivePanel("details");
-    },
-    [loadProjects]
-  );
-
-  const handleStartCreateProject = useCallback(() => {
-    setActivePanel("create");
-  }, []);
-
-  const handleStartUpdateProject = useCallback(() => {
-    if (!selectedProject || !isCreator) {
-      return;
-    }
-
-    setActivePanel("edit");
-  }, [isCreator, selectedProject]);
-
-  // Opening details panel after selecting a project keeps UI state explicit.
-  const handleSelectProject = useCallback((projectId) => {
-    setSelectedProjectId(projectId);
-    setActivePanel("details");
-  }, []);
-
-  const handleProjectDeleted = useCallback(async () => {
-    setSelectedProjectId(null);
-    await loadProjects();
-  }, [loadProjects]);
-
-  const handleProjectUpdated = useCallback(
-    async (projectId) => {
-      await loadProjects();
-      if (projectId) {
-        setSelectedProjectId(projectId);
-      }
-      setActivePanel("details");
-    },
-    [loadProjects]
-  );
+function WorkspaceLayout() {
+  const { activePanel, selectedProject } = useWorkspaceContext();
 
   return (
     <main className="workspace-layout">
-      <WorkspaceSidebar
-        currentUser={currentUser}
-        onStartCreateProject={handleStartCreateProject}
-        isLoading={isLoading}
-        userProjects={userProjects}
-        selectedProjectId={selectedProjectId}
-        onSelectProject={handleSelectProject}
-      />
+      <WorkspaceSidebar />
       {/* Right side switches between create, edit and details views */}
       {activePanel === "create" ? (
-        <WorkspaceCreateProjectForm
-          currentUser={currentUser}
-          onProjectCreated={handleProjectCreated}
-          onCancel={() => setActivePanel("details")}
-        />
+        <WorkspaceCreateProjectForm />
       ) : activePanel === "edit" && selectedProject ? (
-        <WorkspaceUpdateProjectForm
-          currentUser={currentUser}
-          selectedProject={selectedProject}
-          onProjectUpdated={handleProjectUpdated}
-          onCancel={() => setActivePanel("details")}
-        />
+        <WorkspaceUpdateProjectForm />
       ) : (
-        <WorkspaceDetails
-          currentUser={currentUser}
-          selectedProject={selectedProject}
-          onProjectDeleted={handleProjectDeleted}
-          onStartUpdateProject={handleStartUpdateProject}
-        />
+        <WorkspaceDetails />
       )}
     </main>
+  );
+}
+
+export default function Workspace({ currentUser }) {
+  return (
+    <WorkspaceProvider currentUser={currentUser}>
+      <WorkspaceLayout />
+    </WorkspaceProvider>
   );
 }

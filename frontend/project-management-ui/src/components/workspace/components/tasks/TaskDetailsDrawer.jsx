@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { formatDate } from "../../shared/utils";
 import { toggleTaskDone } from "../../../../services/taskApi";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Task details view shown in place of project details.
  */
-export default function TaskDetailsDrawer({ task, currentUser, onClose, onTaskUpdated }) {
+export default function TaskDetailsDrawer({ task, onClose, onTaskUpdated }) {
+  const { currentUser } = useWorkspaceContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 

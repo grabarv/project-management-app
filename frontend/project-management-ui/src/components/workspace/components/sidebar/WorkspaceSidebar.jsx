@@ -1,16 +1,17 @@
 import WorkspaceProjectGroup from "./WorkspaceProjectGroup";
+import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**
  * Left-side project navigation panel.
  */
-export default function WorkspaceSidebar({
-  currentUser,
-  onStartCreateProject,
-  isLoading,
-  userProjects,
-  selectedProjectId,
-  onSelectProject,
-}) {
+export default function WorkspaceSidebar() {
+  const {
+    currentUser,
+    userProjects,
+    selectedProjectId,
+    isLoading,
+    actions: { startCreateProject, selectProject },
+  } = useWorkspaceContext();
   const createdProjects = userProjects.filter(
     (project) => project.createdByUserId === currentUser?.userId
   );
@@ -25,7 +26,7 @@ export default function WorkspaceSidebar({
         <p>{currentUser?.username || "User"}</p>
       </div>
 
-      <button type="button" className="new-project-button" onClick={onStartCreateProject}>
+      <button type="button" className="new-project-button" onClick={startCreateProject}>
         + New project
       </button>
 
@@ -42,7 +43,7 @@ export default function WorkspaceSidebar({
             itemClassName="project-item-owned"
             badgeLabel="Owner"
             selectedProjectId={selectedProjectId}
-            onSelectProject={onSelectProject}
+            onSelectProject={selectProject}
           />
           <WorkspaceProjectGroup
             title="Participating"
@@ -50,7 +51,7 @@ export default function WorkspaceSidebar({
             itemClassName="project-item-participating"
             badgeLabel="Member"
             selectedProjectId={selectedProjectId}
-            onSelectProject={onSelectProject}
+            onSelectProject={selectProject}
           />
         </div>
       )}
