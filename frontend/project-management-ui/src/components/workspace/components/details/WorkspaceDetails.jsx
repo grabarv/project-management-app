@@ -1,5 +1,5 @@
-import { useWorkspaceDetailsState } from "../../hooks/useWorkspaceDetailsState";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { WorkspaceDetailsProvider, useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
 import WorkspaceProjectContent from "./WorkspaceProjectContent";
 import WorkspaceTaskContent from "./WorkspaceTaskContent";
 
@@ -8,32 +8,6 @@ import WorkspaceTaskContent from "./WorkspaceTaskContent";
  */
 export default function WorkspaceDetails() {
   const { selectedProject } = useWorkspaceContext();
-  const {
-    selectedTask,
-    taskViewMode,
-    tasksRefreshKey,
-    isCreateTaskOpen,
-    openTaskDetails,
-    openTaskEdit,
-    closeTaskView,
-    handleTaskUpdated,
-    handleTaskCreated,
-    handleTaskDeleted,
-    toggleCreateTask,
-    closeCreateTask,
-  } = useWorkspaceDetailsState(selectedProject);
-
-  const taskControls = {
-    tasksRefreshKey,
-    isCreateTaskOpen,
-    openTaskDetails,
-    openTaskEdit,
-    handleTaskUpdated,
-    handleTaskCreated,
-    handleTaskDeleted,
-    toggleCreateTask,
-    closeCreateTask,
-  };
 
   return (
     <section className="workspace-column workspace-details">
@@ -42,18 +16,17 @@ export default function WorkspaceDetails() {
           <h2>Select a project</h2>
           <p>Choose a project name from the left side to view details here.</p>
         </div>
-      ) : selectedTask ? (
-        <WorkspaceTaskContent
-          selectedTask={selectedTask}
-          taskViewMode={taskViewMode}
-          onTaskUpdated={handleTaskUpdated}
-          onCloseTaskView={closeTaskView}
-        />
       ) : (
-        <WorkspaceProjectContent
-          taskControls={taskControls}
-        />
+        <WorkspaceDetailsProvider selectedProject={selectedProject}>
+          <WorkspaceDetailsBody />
+        </WorkspaceDetailsProvider>
       )}
     </section>
   );
+}
+
+function WorkspaceDetailsBody() {
+  const { selectedTask } = useWorkspaceDetailsContext();
+
+  return selectedTask ? <WorkspaceTaskContent /> : <WorkspaceProjectContent />;
 }

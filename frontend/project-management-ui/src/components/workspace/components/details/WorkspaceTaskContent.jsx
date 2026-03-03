@@ -1,17 +1,15 @@
 import TaskDetailsDrawer from "../tasks/TaskDetailsDrawer";
 import WorkspaceUpdateTaskForm from "../tasks/WorkspaceUpdateTaskForm";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
 
 /**
  * Selected-task branch of the workspace details panel.
  */
-export default function WorkspaceTaskContent({
-  selectedTask,
-  taskViewMode,
-  onTaskUpdated,
-  onCloseTaskView,
-}) {
+export default function WorkspaceTaskContent() {
   const { selectedProject } = useWorkspaceContext();
+  const { selectedTask, taskViewMode, handleTaskUpdated, closeTaskView } =
+    useWorkspaceDetailsContext();
 
   if (!selectedTask) {
     return null;
@@ -21,8 +19,8 @@ export default function WorkspaceTaskContent({
     return (
       <WorkspaceUpdateTaskForm
         task={selectedTask}
-        onTaskUpdated={onTaskUpdated}
-        onCancel={onCloseTaskView}
+        onTaskUpdated={handleTaskUpdated}
+        onCancel={closeTaskView}
       />
     );
   }
@@ -30,8 +28,8 @@ export default function WorkspaceTaskContent({
   return (
     <TaskDetailsDrawer
       task={selectedTask}
-      onClose={onCloseTaskView}
-      onTaskUpdated={onTaskUpdated}
+      onClose={closeTaskView}
+      onTaskUpdated={handleTaskUpdated}
     />
   );
 }

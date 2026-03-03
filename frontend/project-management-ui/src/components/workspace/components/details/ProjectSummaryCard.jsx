@@ -1,15 +1,17 @@
 import { formatDate } from "../../shared/utils";
 import { useWorkspaceContext } from "../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
 
 /**
  * Displays selected project information and top-level project actions.
  */
-export default function ProjectSummaryCard({ isCreateTaskOpen, onToggleCreateTask, onOpenProjectDelete }) {
+export default function ProjectSummaryCard({ onOpenProjectDelete }) {
   const {
     selectedProject,
     isCreator,
     actions: { startUpdateProject },
   } = useWorkspaceContext();
+  const { isCreateTaskOpen, toggleCreateTask } = useWorkspaceDetailsContext();
 
   return (
     <>
@@ -27,7 +29,7 @@ export default function ProjectSummaryCard({ isCreateTaskOpen, onToggleCreateTas
             <button type="button" className="neutral" onClick={startUpdateProject}>
               Update project
             </button>
-            <button type="button" className="neutral" onClick={onToggleCreateTask}>
+            <button type="button" className="neutral" onClick={toggleCreateTask}>
               {isCreateTaskOpen ? "Close task form" : "Create task"}
             </button>
             <button type="button" className="danger" onClick={onOpenProjectDelete}>
