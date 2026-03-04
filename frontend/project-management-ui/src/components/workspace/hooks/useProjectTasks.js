@@ -8,12 +8,14 @@ export function useProjectTasks(currentUser, selectedProject, refreshKey = 0) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const currentUserId = currentUser?.userId ?? null;
+  const selectedProjectId = selectedProject?.id ?? null;
 
   useEffect(() => {
     let isMounted = true;
 
     const loadTasks = async () => {
-      if (!selectedProject?.id || !currentUser?.userId) {
+      if (!selectedProjectId || !currentUserId) {
         if (isMounted) {
           setTasks([]);
           setErrorMessage("");
@@ -25,7 +27,7 @@ export function useProjectTasks(currentUser, selectedProject, refreshKey = 0) {
       setIsLoading(true);
       setErrorMessage("");
 
-      const result = await fetchProjectTasks(selectedProject.id, currentUser.userId);
+      const result = await fetchProjectTasks(selectedProjectId, currentUserId);
 
       if (!isMounted) {
         return;
@@ -47,23 +49,23 @@ export function useProjectTasks(currentUser, selectedProject, refreshKey = 0) {
     return () => {
       isMounted = false;
     };
-  }, [currentUser, selectedProject, refreshKey]);
+  }, [currentUserId, selectedProjectId, refreshKey]);
 
   const myTasks = useMemo(() => {
-    if (!currentUser?.userId) {
+    if (!currentUserId) {
       return [];
     }
 
-    return tasks.filter((task) => task.assignedToUserId === currentUser.userId);
-  }, [tasks, currentUser]);
+    return tasks.filter((task) => task.assignedToUserId === currentUserId);
+  }, [tasks, currentUserId]);
 
   const otherUsersTasks = useMemo(() => {
-    if (!currentUser?.userId) {
+    if (!currentUserId) {
       return [];
     }
 
-    return tasks.filter((task) => task.assignedToUserId !== currentUser.userId);
-  }, [tasks, currentUser]);
+    return tasks.filter((task) => task.assignedToUserId !== currentUserId);
+  }, [tasks, currentUserId]);
 
   return {
     tasks,
