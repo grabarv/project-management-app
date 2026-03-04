@@ -2,12 +2,16 @@
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
   background: #f4f7fb;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .workspace-column {
-  min-height: 100vh;
+  min-height: 0;
+  height: 100vh;
+  min-width: 0;
 }
 
 .workspace-column:first-child {
@@ -17,6 +21,49 @@
 .workspace-sidebar {
   padding: 28px 20px;
   background: #ffffff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.workspace-details {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.workspace-details > * {
+  min-width: 0;
+}
+
+.workspace-sidebar:focus,
+.workspace-details:focus {
+  outline: 2px solid #5f96e8;
+  outline-offset: -2px;
+}
+
+.workspace-sidebar::-webkit-scrollbar,
+.workspace-details::-webkit-scrollbar {
+  width: 12px;
+}
+
+.workspace-sidebar::-webkit-scrollbar-track,
+.workspace-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb,
+.workspace-details::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #c3d2e7;
+  background-clip: padding-box;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb:hover,
+.workspace-details::-webkit-scrollbar-thumb:hover {
+  background: #9eb4d2;
+  background-clip: padding-box;
 }
 
 .workspace-header h2 {
@@ -684,20 +731,49 @@
 @media (max-width: 900px) {
   .workspace-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: minmax(220px, 38vh) minmax(0, 1fr);
   }
 
   .workspace-column:first-child {
     border-right: 0;
     border-bottom: 1px solid #d7deea;
-    min-height: auto;
+  }
+
+  .workspace-column {
+    height: auto;
+  }
+
+  .workspace-sidebar {
+    padding: 20px 16px;
   }
 
   .workspace-details {
-    padding-top: 20px;
+    padding: 20px 16px 28px;
   }
 
   .task-details-view {
     max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-layout {
+    grid-template-rows: minmax(220px, 42vh) minmax(0, 1fr);
+  }
+
+  .project-actions,
+  .create-project-actions,
+  .invitation-form-row,
+  .invitation-actions,
+  .modal-actions,
+  .task-details-actions,
+  .task-details-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .project-item,
+  .invitation-item {
+    align-items: flex-start;
   }
 }

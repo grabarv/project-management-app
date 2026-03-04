@@ -10,7 +10,11 @@ export default function WorkspaceDetails() {
   const { selectedProject } = useWorkspaceContext();
 
   return (
-    <section className="workspace-column workspace-details">
+    <section
+      className="workspace-column workspace-details"
+      tabIndex={0}
+      aria-label="Workspace details"
+    >
       {!selectedProject ? (
         <div className="workspace-empty-state">
           <h2>Select a project</h2>

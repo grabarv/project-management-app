@@ -21,7 +21,11 @@ export default function WorkspaceSidebar() {
   );
 
   return (
-    <section className="workspace-column workspace-sidebar">
+    <section
+      className="workspace-column workspace-sidebar"
+      tabIndex={0}
+      aria-label="Workspace sidebar"
+    >
       <div className="workspace-header">
         <h2>My projects</h2>
         <p>{currentUser?.username || "User"}</p>
