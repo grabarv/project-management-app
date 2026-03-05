@@ -1,0 +1,173 @@
+.project-tasks-panel {
+  margin-top: 24px;
+  border: 1px solid #dfe7f2;
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px;
+}
+
+.project-tasks-panel-secondary {
+  background: #fbfcff;
+  border-color: #d8e2f0;
+}
+
+.project-tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.project-tasks-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.participant-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.participant-chip {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #edf3ff;
+  color: #29496f;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.participant-chip-owner {
+  background: #dff3e6;
+  color: #1f6a3a;
+}
+
+.participant-chip-removable {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 6px;
+}
+
+.participant-chip-remove {
+  border: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #f6d9d9;
+  color: #8f1f1f;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.participant-chip-remove:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.invitation-form {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.invitation-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #415873;
+}
+
+.invitation-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.invitation-form-row input {
+  flex: 1;
+  border: 1px solid #c8d4e6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.invitation-form-row button,
+.invitation-item > button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.invitation-form-row button {
+  background: #1f78ff;
+  color: #fff;
+}
+
+.invitation-item > button,
+.invitation-item > .danger {
+  background: #fde7e7;
+  border-color: #f3b2b2;
+  color: #961f1f;
+}
+
+.invitation-form-row button:disabled,
+.invitation-item > button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.workspace-info {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.invitation-list {
+  gap: 10px;
+}
+
+.invitation-item {
+  border: 1px solid #dfe7f2;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.invitation-title {
+  margin: 0;
+  font-weight: 700;
+  color: #20344f;
+}
+
+.invitation-meta {
+  margin: 4px 0 0;
+  color: #56708f;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .invitation-form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .invitation-item {
+    align-items: flex-start;
+  }
+}

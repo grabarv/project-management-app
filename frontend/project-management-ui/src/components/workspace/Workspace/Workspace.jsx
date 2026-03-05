@@ -1,9 +1,9 @@
-import "./workspace.css";
-import WorkspaceSidebar from "./components/sidebar/WorkspaceSidebar";
-import WorkspaceDetails from "./components/details/WorkspaceDetails";
-import WorkspaceCreateProjectForm from "./components/projects/WorkspaceCreateProjectForm";
-import WorkspaceUpdateProjectForm from "./components/projects/WorkspaceUpdateProjectForm";
-import { WorkspaceProvider, useWorkspaceContext } from "./WorkspaceContext";
+import "./Workspace.css";
+import WorkspaceSidebar from "../components/sidebar/WorkspaceSidebar/WorkspaceSidebar";
+import WorkspaceDetails from "../components/details/WorkspaceDetails/WorkspaceDetails";
+import WorkspaceCreateProjectForm from "../components/projects/WorkspaceCreateProjectForm/WorkspaceCreateProjectForm";
+import WorkspaceUpdateProjectForm from "../components/projects/WorkspaceUpdateProjectForm/WorkspaceUpdateProjectForm";
+import { WorkspaceProvider, useWorkspaceContext } from "../WorkspaceContext";
 
 /**
  * Workspace container:

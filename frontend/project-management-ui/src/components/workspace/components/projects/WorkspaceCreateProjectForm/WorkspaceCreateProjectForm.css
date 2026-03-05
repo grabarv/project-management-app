@@ -1,0 +1,63 @@
+.workspace-create-panel {
+  max-width: 560px;
+}
+
+.workspace-create-panel p {
+  margin: 8px 0 18px;
+  color: #4f647e;
+}
+
+.create-project-form {
+  display: grid;
+  gap: 8px;
+}
+
+.create-project-form input,
+.create-project-form textarea,
+.create-project-form select {
+  border: 1px solid #c8d4e6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.create-project-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.create-project-form button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #1f78ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-project-form button:disabled,
+.create-project-actions .neutral:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.create-project-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.create-project-actions .neutral {
+  border: 1px solid #c9d8f3;
+  background: #ebf1fb;
+  color: #284673;
+}
+
+@media (max-width: 640px) {
+  .create-project-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

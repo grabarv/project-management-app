@@ -1,7 +1,8 @@
-import { useWorkspaceContext } from "../../WorkspaceContext";
-import { WorkspaceDetailsProvider, useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
-import WorkspaceProjectContent from "./WorkspaceProjectContent";
-import WorkspaceTaskContent from "./WorkspaceTaskContent";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import { WorkspaceDetailsProvider, useWorkspaceDetailsContext } from "../WorkspaceDetailsContext";
+import WorkspaceProjectContent from "../WorkspaceProjectContent";
+import WorkspaceTaskContent from "../WorkspaceTaskContent";
+import "./WorkspaceDetails.css";
 
 /**
  * Right-side project details view with creator-only delete action.

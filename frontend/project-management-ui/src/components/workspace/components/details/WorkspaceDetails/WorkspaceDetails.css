@@ -1,0 +1,55 @@
+.workspace-details {
+  padding: 28px 32px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.workspace-details > * {
+  min-width: 0;
+}
+
+.workspace-details:focus {
+  outline: 2px solid #5f96e8;
+  outline-offset: -2px;
+}
+
+.workspace-details::-webkit-scrollbar {
+  width: 12px;
+}
+
+.workspace-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-details::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #c3d2e7;
+  background-clip: padding-box;
+}
+
+.workspace-details::-webkit-scrollbar-thumb:hover {
+  background: #9eb4d2;
+  background-clip: padding-box;
+}
+
+.workspace-empty-state {
+  color: #3e5875;
+  max-width: 420px;
+  padding-top: 40px;
+}
+
+.workspace-empty-state h2 {
+  margin: 0 0 12px;
+}
+
+.workspace-empty-state p {
+  margin: 8px 0 0;
+}
+
+@media (max-width: 900px) {
+  .workspace-details {
+    padding: 20px 16px 28px;
+  }
+}

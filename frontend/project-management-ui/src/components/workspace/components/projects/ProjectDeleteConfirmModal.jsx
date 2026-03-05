@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { deleteProject } from "../../../../services/projectApi";
 import { useNotification } from "../../../notification/notificationContext";
-import ConfirmModal from "../shared/ConfirmModal";
+import ConfirmModal from "../shared/ConfirmModal/ConfirmModal";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 
 /**

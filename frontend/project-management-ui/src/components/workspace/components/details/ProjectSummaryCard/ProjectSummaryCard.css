@@ -1,0 +1,59 @@
+.project-summary-card h2 {
+  margin: 0 0 12px;
+}
+
+.project-summary-description {
+  margin: 0 0 18px;
+  color: #354e6c;
+  line-height: 1.45;
+}
+
+.project-summary-meta {
+  margin: 0 0 10px;
+  color: #354e6c;
+}
+
+.project-summary-actions {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.project-summary-actions button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.project-summary-actions .danger {
+  background: #fde7e7;
+  border-color: #f3b2b2;
+  color: #961f1f;
+}
+
+.project-summary-actions .neutral {
+  background: #ebf1fb;
+  border-color: #c9d8f3;
+  color: #284673;
+}
+
+.project-summary-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.workspace-info {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .project-summary-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

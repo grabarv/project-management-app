@@ -3,9 +3,10 @@ import {
   acceptProjectInvitation,
   declineProjectInvitation,
   fetchReceivedProjectInvitations,
-} from "../../../../services/projectInvitationApi";
-import { useNotification } from "../../../notification/notificationContext";
-import { useWorkspaceContext } from "../../WorkspaceContext";
+} from "../../../../../services/projectInvitationApi";
+import { useNotification } from "../../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import "./ReceivedInvitationsPanel.css";
 
 /**
  * Sidebar panel that lets the current user accept or decline pending invitations.

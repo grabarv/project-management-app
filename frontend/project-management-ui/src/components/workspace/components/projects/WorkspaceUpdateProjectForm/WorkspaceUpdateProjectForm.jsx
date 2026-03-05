@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { updateProject } from "../../../../services/projectApi";
-import { toDateInputValue } from "../../shared/utils";
-import { requireCurrentUserId, getValidatedDueDateUtc } from "../../shared/formValidation";
-import { useObjectForm } from "../../hooks/useObjectForm";
-import { useNotification } from "../../../notification/notificationContext";
-import { useWorkspaceContext } from "../../WorkspaceContext";
+import { updateProject } from "../../../../../services/projectApi";
+import { toDateInputValue } from "../../../shared/utils";
+import { requireCurrentUserId, getValidatedDueDateUtc } from "../../../shared/formValidation";
+import { useObjectForm } from "../../../hooks/useObjectForm";
+import { useNotification } from "../../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import "./WorkspaceUpdateProjectForm.css";
 
 /**
  * Project update form rendered in the right panel for the selected project.

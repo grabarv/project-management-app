@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { formatDate } from "../../shared/utils";
-import { toggleTaskDone } from "../../../../services/taskApi";
-import { useWorkspaceContext } from "../../WorkspaceContext";
-import { useWorkspaceDetailsContext } from "../details/WorkspaceDetailsContext";
+import { formatDate } from "../../../shared/utils";
+import { toggleTaskDone } from "../../../../../services/taskApi";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../../details/WorkspaceDetailsContext";
+import "./TaskDetailsDrawer.css";
 
 /**
  * Task details view shown in place of project details.

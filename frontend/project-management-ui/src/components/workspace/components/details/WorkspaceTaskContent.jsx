@@ -1,5 +1,5 @@
-import TaskDetailsDrawer from "../tasks/TaskDetailsDrawer";
-import WorkspaceUpdateTaskForm from "../tasks/WorkspaceUpdateTaskForm";
+import TaskDetailsDrawer from "../tasks/TaskDetailsDrawer/TaskDetailsDrawer";
+import WorkspaceUpdateTaskForm from "../tasks/WorkspaceUpdateTaskForm/WorkspaceUpdateTaskForm";
 import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
 
 /**

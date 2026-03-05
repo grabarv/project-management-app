@@ -1,5 +1,5 @@
 import ProjectTasksTable from "../tasks/ProjectTasksTable";
-import WorkspaceCreateTaskForm from "../tasks/WorkspaceCreateTaskForm";
+import WorkspaceCreateTaskForm from "../tasks/WorkspaceCreateTaskForm/WorkspaceCreateTaskForm";
 import { useWorkspaceContext } from "../../WorkspaceContext";
 import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
 

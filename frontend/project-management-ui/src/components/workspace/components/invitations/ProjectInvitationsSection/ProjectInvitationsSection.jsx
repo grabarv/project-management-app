@@ -2,10 +2,11 @@ import { useMemo, useState } from "react";
 import {
   cancelProjectInvitation,
   createProjectInvitation,
-} from "../../../../services/projectInvitationApi";
-import { useNotification } from "../../../notification/notificationContext";
-import { useWorkspaceContext } from "../../WorkspaceContext";
-import ParticipantRemoveConfirmModal from "./ParticipantRemoveConfirmModal";
+} from "../../../../../services/projectInvitationApi";
+import { useNotification } from "../../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import ParticipantRemoveConfirmModal from "../ParticipantRemoveConfirmModal";
+import "./ProjectInvitationsSection.css";
 
 /**
  * Creator-side invitation management for the selected project.

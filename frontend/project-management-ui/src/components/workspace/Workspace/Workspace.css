@@ -1,0 +1,41 @@
+.workspace-layout {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  background: #f4f7fb;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.workspace-column {
+  min-height: 0;
+  height: 100vh;
+  min-width: 0;
+}
+
+.workspace-column:first-child {
+  border-right: 1px solid #d7deea;
+}
+
+@media (max-width: 900px) {
+  .workspace-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(220px, 38vh) minmax(0, 1fr);
+  }
+
+  .workspace-column:first-child {
+    border-right: 0;
+    border-bottom: 1px solid #d7deea;
+  }
+
+  .workspace-column {
+    height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-layout {
+    grid-template-rows: minmax(220px, 42vh) minmax(0, 1fr);
+  }
+}

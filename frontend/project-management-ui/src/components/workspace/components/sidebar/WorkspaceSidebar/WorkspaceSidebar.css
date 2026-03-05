@@ -1,0 +1,71 @@
+.workspace-sidebar {
+  padding: 28px 20px;
+  background: #ffffff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.workspace-sidebar:focus {
+  outline: 2px solid #5f96e8;
+  outline-offset: -2px;
+}
+
+.workspace-sidebar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.workspace-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #c3d2e7;
+  background-clip: padding-box;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #9eb4d2;
+  background-clip: padding-box;
+}
+
+.workspace-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.workspace-header p {
+  margin: 6px 0 18px;
+  color: #4f647e;
+  font-size: 0.95rem;
+}
+
+.new-project-button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  background: #1f78ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.project-groups {
+  display: grid;
+  gap: 14px;
+}
+
+.workspace-info {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .workspace-sidebar {
+    padding: 20px 16px;
+  }
+}

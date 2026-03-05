@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { createProject } from "../../../../services/projectApi";
-import { EMPTY_CREATE_FORM } from "../../shared/constants";
-import { requireCurrentUserId, getValidatedDueDateUtc } from "../../shared/formValidation";
-import { useObjectForm } from "../../hooks/useObjectForm";
-import { useNotification } from "../../../notification/notificationContext";
-import { useWorkspaceContext } from "../../WorkspaceContext";
+import { createProject } from "../../../../../services/projectApi";
+import { EMPTY_CREATE_FORM } from "../../../shared/constants";
+import { requireCurrentUserId, getValidatedDueDateUtc } from "../../../shared/formValidation";
+import { useObjectForm } from "../../../hooks/useObjectForm";
+import { useNotification } from "../../../../notification/notificationContext";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import "./WorkspaceCreateProjectForm.css";
 
 /**
  * Project creation form view rendered on the right side of the workspace.

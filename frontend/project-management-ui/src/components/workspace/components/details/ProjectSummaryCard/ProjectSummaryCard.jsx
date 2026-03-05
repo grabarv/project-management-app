@@ -1,6 +1,7 @@
-import { formatDate } from "../../shared/utils";
-import { useWorkspaceContext } from "../../WorkspaceContext";
-import { useWorkspaceDetailsContext } from "./WorkspaceDetailsContext";
+import { formatDate } from "../../../shared/utils";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import { useWorkspaceDetailsContext } from "../WorkspaceDetailsContext";
+import "./ProjectSummaryCard.css";
 
 /**
  * Displays selected project information and top-level project actions.
@@ -14,16 +15,16 @@ export default function ProjectSummaryCard({ onOpenProjectDelete }) {
   const { isCreateTaskOpen, toggleCreateTask } = useWorkspaceDetailsContext();
 
   return (
-    <>
+    <article className="project-summary-card">
       <h2>{selectedProject.name}</h2>
-      <p className="project-description">{selectedProject.description}</p>
-      <p>
+      <p className="project-summary-description">{selectedProject.description}</p>
+      <p className="project-summary-meta">
         <strong>Created:</strong> {formatDate(selectedProject.createdAtUtc)}
       </p>
-      <p>
+      <p className="project-summary-meta">
         <strong>Due:</strong> {formatDate(selectedProject.dueDateUtc)}
       </p>
-      <div className="project-actions">
+      <div className="project-summary-actions">
         {isCreator ? (
           <>
             <button type="button" className="neutral" onClick={startUpdateProject}>
@@ -42,6 +43,6 @@ export default function ProjectSummaryCard({ onOpenProjectDelete }) {
           </p>
         )}
       </div>
-    </>
+    </article>
   );
 }

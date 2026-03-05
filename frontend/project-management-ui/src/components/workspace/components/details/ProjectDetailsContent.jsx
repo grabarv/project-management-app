@@ -1,6 +1,6 @@
-import ProjectSummaryCard from "./ProjectSummaryCard";
+import ProjectSummaryCard from "./ProjectSummaryCard/ProjectSummaryCard";
 import ProjectTasksSection from "./ProjectTasksSection";
-import ProjectInvitationsSection from "../invitations/ProjectInvitationsSection";
+import ProjectInvitationsSection from "../invitations/ProjectInvitationsSection/ProjectInvitationsSection";
 
 /**
  * Project details view shown when no task subview is active.

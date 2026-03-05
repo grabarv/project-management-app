@@ -1,0 +1,93 @@
+.task-details-view {
+  border: 1px solid #dfe7f2;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(11, 28, 48, 0.08);
+  padding: 20px;
+  max-width: 760px;
+}
+
+.task-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.task-details-header h3 {
+  margin: 0;
+}
+
+.task-details-header .neutral {
+  border: 1px solid #c9d8f3;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+  background: #ebf1fb;
+  color: #284673;
+}
+
+.create-project-form {
+  display: grid;
+  gap: 8px;
+}
+
+.create-project-form input,
+.create-project-form textarea,
+.create-project-form select {
+  border: 1px solid #c8d4e6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.create-project-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.create-project-form button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #1f78ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-project-form button:disabled,
+.task-details-header .neutral:disabled,
+.create-project-actions .neutral:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.create-project-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.create-project-actions .neutral {
+  border: 1px solid #c9d8f3;
+  background: #ebf1fb;
+  color: #284673;
+}
+
+@media (max-width: 900px) {
+  .task-details-view {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .task-details-header,
+  .create-project-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -2,7 +2,7 @@ import WelcomePage from "./components/welcome-page/WelcomePage";
 import { useState } from "react";
 import SignIn from "./components/sign-in/SignIn";
 import SignUp from "./components/sign-up/SignUp";
-import Workspace from "./components/workspace/Workspace";
+import Workspace from "./components/workspace/Workspace/Workspace";
 import NotificationProvider from "./components/notification/NotificationProvider";
 
 function App() {

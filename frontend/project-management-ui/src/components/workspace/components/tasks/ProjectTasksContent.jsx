@@ -1,4 +1,4 @@
-import TaskTableSection from "./TaskTableSection";
+import TaskTableSection from "./TaskTableSection/TaskTableSection";
 import { useProjectTasks } from "../../hooks/useProjectTasks";
 import { useTaskTableFilters } from "../../hooks/useTaskTableFilters";
 import { useWorkspaceContext } from "../../WorkspaceContext";

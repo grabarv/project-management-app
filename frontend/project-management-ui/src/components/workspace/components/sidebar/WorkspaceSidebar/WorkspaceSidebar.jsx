@@ -1,6 +1,7 @@
-import WorkspaceProjectGroup from "./WorkspaceProjectGroup";
-import { useWorkspaceContext } from "../../WorkspaceContext";
-import ReceivedInvitationsPanel from "../invitations/ReceivedInvitationsPanel";
+import WorkspaceProjectGroup from "../WorkspaceProjectGroup/WorkspaceProjectGroup";
+import { useWorkspaceContext } from "../../../WorkspaceContext";
+import ReceivedInvitationsPanel from "../../invitations/ReceivedInvitationsPanel/ReceivedInvitationsPanel";
+import "./WorkspaceSidebar.css";
 
 /**
  * Left-side project navigation panel.

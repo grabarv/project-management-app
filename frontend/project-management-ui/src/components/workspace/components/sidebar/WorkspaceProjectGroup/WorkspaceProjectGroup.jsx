@@ -1,3 +1,5 @@
+import "./WorkspaceProjectGroup.css";
+
 /**
  * Reusable project group section used in the workspace sidebar.
  */

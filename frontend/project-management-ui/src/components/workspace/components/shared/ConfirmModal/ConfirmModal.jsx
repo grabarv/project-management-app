@@ -1,3 +1,5 @@
+import "./ConfirmModal.css";
+
 /**
  * Reusable confirmation modal shell for destructive actions.
  */
