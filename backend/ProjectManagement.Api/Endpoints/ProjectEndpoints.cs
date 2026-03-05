@@ -43,12 +43,6 @@ public static class ProjectEndpoints
                 return errorResult!;
             }
 
-            var validationError = ValidateCreateRequest(request);
-            if (validationError is not null)
-            {
-                return validationError;
-            }
-
             var result = await service.CreateAsync(request, currentUserId);
             if (!result.Success)
             {
@@ -56,19 +50,14 @@ public static class ProjectEndpoints
             }
 
             return Results.Created($"/api/projects/{result.Value!.Id}", result.Value);
-        });
+        })
+        .AddEndpointFilter<RequestValidationFilter<CreateProjectRequest>>();
 
         projects.MapPut("/{id:int}", async (int id, UpdateProjectRequest request, HttpContext httpContext, IProjectService service) =>
         {
             if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
                 return errorResult!;
-            }
-
-            var validationError = ValidateUpdateRequest(request);
-            if (validationError is not null)
-            {
-                return validationError;
             }
 
             var result = await service.UpdateAsync(id, request, currentUserId);
@@ -78,7 +67,8 @@ public static class ProjectEndpoints
             }
 
             return Results.Ok(result.Value);
-        });
+        })
+        .AddEndpointFilter<RequestValidationFilter<UpdateProjectRequest>>();
 
         projects.MapDelete("/{id:int}", async (int id, HttpContext httpContext, IProjectService service) =>
         {
@@ -114,35 +104,5 @@ public static class ProjectEndpoints
         });
 
         return app;
-    }
-
-    private static IResult? ValidateCreateRequest(CreateProjectRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return Results.BadRequest(new { message = "Project name is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-        {
-            return Results.BadRequest(new { message = "Project description is required" });
-        }
-
-        return null;
-    }
-
-    private static IResult? ValidateUpdateRequest(UpdateProjectRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return Results.BadRequest(new { message = "Project name is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-        {
-            return Results.BadRequest(new { message = "Project description is required" });
-        }
-
-        return null;
     }
 }

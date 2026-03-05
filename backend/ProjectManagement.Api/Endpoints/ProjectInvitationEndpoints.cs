@@ -50,16 +50,12 @@ public static class ProjectInvitationEndpoints
                 return errorResult!;
             }
 
-            if (string.IsNullOrWhiteSpace(request.InvitedUsername))
-            {
-                return Results.BadRequest(new { message = "InvitedUsername is required" });
-            }
-
             var result = await service.CreateAsync(projectId, request, currentUserId);
             return result.Success
                 ? Results.Created($"/api/project-invitations/{result.Value!.Id}", result.Value)
                 : result.ToHttpError();
-        });
+        })
+        .AddEndpointFilter<RequestValidationFilter<CreateProjectInvitationRequest>>();
 
         invitations.MapPost("/project-invitations/{id:int}/accept", async (
             int id,

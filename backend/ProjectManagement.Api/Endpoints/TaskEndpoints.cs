@@ -51,12 +51,6 @@ public static class TaskEndpoints
                 return errorResult!;
             }
 
-            var validationError = ValidateCreateRequest(request);
-            if (validationError is not null)
-            {
-                return validationError;
-            }
-
             var result = await service.CreateAsync(projectId, request, currentUserId);
             if (!result.Success)
             {
@@ -64,7 +58,8 @@ public static class TaskEndpoints
             }
 
             return Results.Created($"/api/tasks/{result.Value!.Id}", result.Value);
-        });
+        })
+        .AddEndpointFilter<RequestValidationFilter<CreateTaskRequest>>();
 
         tasks.MapPut("/tasks/{id:int}", async (
             int id,
@@ -77,15 +72,10 @@ public static class TaskEndpoints
                 return errorResult!;
             }
 
-            var validationError = ValidateUpdateRequest(request);
-            if (validationError is not null)
-            {
-                return validationError;
-            }
-
             var result = await service.UpdateAsync(id, request, currentUserId);
             return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
-        });
+        })
+        .AddEndpointFilter<RequestValidationFilter<UpdateTaskRequest>>();
 
         tasks.MapPost("/tasks/{id:int}/toggle-done", async (
             int id,
@@ -116,57 +106,5 @@ public static class TaskEndpoints
         });
 
         return app;
-    }
-
-    private static IResult? ValidateCreateRequest(CreateTaskRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return Results.BadRequest(new { message = "Task name is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-        {
-            return Results.BadRequest(new { message = "Task description is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Status))
-        {
-            return Results.BadRequest(new { message = "Task status is required" });
-        }
-        // Allowed values are enforced in the service through TaskStatus enum parsing.
-
-        if (request.AssignedToUserId <= 0)
-        {
-            return Results.BadRequest(new { message = "AssignedToUserId is required" });
-        }
-
-        return null;
-    }
-
-    private static IResult? ValidateUpdateRequest(UpdateTaskRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return Results.BadRequest(new { message = "Task name is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-        {
-            return Results.BadRequest(new { message = "Task description is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Status))
-        {
-            return Results.BadRequest(new { message = "Task status is required" });
-        }
-        // Allowed values are enforced in the service through TaskStatus enum parsing.
-
-        if (request.AssignedToUserId <= 0)
-        {
-            return Results.BadRequest(new { message = "AssignedToUserId is required" });
-        }
-
-        return null;
     }
 }
