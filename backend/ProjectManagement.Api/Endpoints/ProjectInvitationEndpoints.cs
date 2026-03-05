@@ -16,13 +16,12 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.GetReceivedAsync(currentUserResult.Value);
+            var result = await service.GetReceivedAsync(currentUserId);
             return Results.Ok(result);
         });
 
@@ -31,14 +30,13 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.GetForProjectAsync(projectId, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.GetForProjectAsync(projectId, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         invitations.MapPost("/projects/{projectId:int}/invitations", async (
@@ -47,10 +45,9 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
             if (string.IsNullOrWhiteSpace(request.InvitedUsername))
@@ -58,10 +55,10 @@ public static class ProjectInvitationEndpoints
                 return Results.BadRequest(new { message = "InvitedUsername is required" });
             }
 
-            var result = await service.CreateAsync(projectId, request, currentUserResult.Value);
+            var result = await service.CreateAsync(projectId, request, currentUserId);
             return result.Success
                 ? Results.Created($"/api/project-invitations/{result.Value!.Id}", result.Value)
-                : ToHttpError(result);
+                : result.ToHttpError();
         });
 
         invitations.MapPost("/project-invitations/{id:int}/accept", async (
@@ -69,14 +66,13 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.AcceptAsync(id, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.AcceptAsync(id, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         invitations.MapPost("/project-invitations/{id:int}/decline", async (
@@ -84,14 +80,13 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.DeclineAsync(id, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.DeclineAsync(id, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         invitations.MapDelete("/project-invitations/{id:int}", async (
@@ -99,52 +94,15 @@ public static class ProjectInvitationEndpoints
             HttpContext httpContext,
             IProjectInvitationService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.CancelAsync(id, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.CancelAsync(id, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         return app;
-    }
-
-    private static IResult ToHttpError<T>(OperationResult<T> result)
-    {
-        return result.StatusCode switch
-        {
-            400 => Results.BadRequest(new { message = result.Error }),
-            403 => Results.Json(
-                new { message = result.Error ?? "You do not have permission to perform this action" },
-                statusCode: StatusCodes.Status403Forbidden),
-            404 => Results.NotFound(new { message = result.Error }),
-            _ => Results.StatusCode(result.StatusCode)
-        };
-    }
-
-    private static CurrentUserResolutionResult TryGetCurrentUserId(HttpContext httpContext)
-    {
-        if (!httpContext.Request.Headers.TryGetValue("X-User-Id", out var rawUserId))
-        {
-            return CurrentUserResolutionResult.Fail(
-                Results.BadRequest(new { message = "X-User-Id header is required" }));
-        }
-
-        if (!int.TryParse(rawUserId, out var currentUserId) || currentUserId <= 0)
-        {
-            return CurrentUserResolutionResult.Fail(
-                Results.BadRequest(new { message = "X-User-Id header is invalid" }));
-        }
-
-        return CurrentUserResolutionResult.Ok(currentUserId);
-    }
-
-    private sealed record CurrentUserResolutionResult(bool Success, int Value, IResult? ErrorResult)
-    {
-        public static CurrentUserResolutionResult Ok(int userId) => new(true, userId, null);
-        public static CurrentUserResolutionResult Fail(IResult errorResult) => new(false, 0, errorResult);
     }
 }

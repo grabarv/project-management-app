@@ -17,14 +17,13 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.GetByProjectAsync(projectId, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.GetByProjectAsync(projectId, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         tasks.MapGet("/tasks/{id:int}", async (
@@ -32,14 +31,13 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.GetByIdAsync(id, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.GetByIdAsync(id, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         tasks.MapPost("/projects/{projectId:int}/tasks", async (
@@ -48,10 +46,9 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
             var validationError = ValidateCreateRequest(request);
@@ -60,10 +57,10 @@ public static class TaskEndpoints
                 return validationError;
             }
 
-            var result = await service.CreateAsync(projectId, request, currentUserResult.Value);
+            var result = await service.CreateAsync(projectId, request, currentUserId);
             if (!result.Success)
             {
-                return ToHttpError(result);
+                return result.ToHttpError();
             }
 
             return Results.Created($"/api/tasks/{result.Value!.Id}", result.Value);
@@ -75,10 +72,9 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
             var validationError = ValidateUpdateRequest(request);
@@ -87,8 +83,8 @@ public static class TaskEndpoints
                 return validationError;
             }
 
-            var result = await service.UpdateAsync(id, request, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.UpdateAsync(id, request, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         tasks.MapPost("/tasks/{id:int}/toggle-done", async (
@@ -96,14 +92,13 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.ToggleDoneAsync(id, currentUserResult.Value);
-            return result.Success ? Results.Ok(result.Value) : ToHttpError(result);
+            var result = await service.ToggleDoneAsync(id, currentUserId);
+            return result.Success ? Results.Ok(result.Value) : result.ToHttpError();
         });
 
         tasks.MapDelete("/tasks/{id:int}", async (
@@ -111,14 +106,13 @@ public static class TaskEndpoints
             HttpContext httpContext,
             ITaskService service) =>
         {
-            var currentUserResult = TryGetCurrentUserId(httpContext);
-            if (!currentUserResult.Success)
+            if (!httpContext.TryResolveCurrentUserId(out var currentUserId, out var errorResult))
             {
-                return currentUserResult.ErrorResult!;
+                return errorResult!;
             }
 
-            var result = await service.DeleteAsync(id, currentUserResult.Value);
-            return result.Success ? Results.NoContent() : ToHttpError(result);
+            var result = await service.DeleteAsync(id, currentUserId);
+            return result.Success ? Results.NoContent() : result.ToHttpError();
         });
 
         return app;
@@ -174,41 +168,5 @@ public static class TaskEndpoints
         }
 
         return null;
-    }
-
-    private static IResult ToHttpError<T>(OperationResult<T> result)
-    {
-        return result.StatusCode switch
-        {
-            400 => Results.BadRequest(new { message = result.Error }),
-            403 => Results.Json(
-                new { message = result.Error ?? "You do not have permission to perform this action" },
-                statusCode: StatusCodes.Status403Forbidden),
-            404 => Results.NotFound(new { message = result.Error }),
-            _ => Results.StatusCode(result.StatusCode)
-        };
-    }
-
-    private static CurrentUserResolutionResult TryGetCurrentUserId(HttpContext httpContext)
-    {
-        if (!httpContext.Request.Headers.TryGetValue("X-User-Id", out var rawUserId))
-        {
-            return CurrentUserResolutionResult.Fail(
-                Results.BadRequest(new { message = "X-User-Id header is required" }));
-        }
-
-        if (!int.TryParse(rawUserId, out var currentUserId) || currentUserId <= 0)
-        {
-            return CurrentUserResolutionResult.Fail(
-                Results.BadRequest(new { message = "X-User-Id header is invalid" }));
-        }
-
-        return CurrentUserResolutionResult.Ok(currentUserId);
-    }
-
-    private sealed record CurrentUserResolutionResult(bool Success, int Value, IResult? ErrorResult)
-    {
-        public static CurrentUserResolutionResult Ok(int userId) => new(true, userId, null);
-        public static CurrentUserResolutionResult Fail(IResult errorResult) => new(false, 0, errorResult);
     }
 }
