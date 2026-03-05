@@ -1,9 +1,16 @@
 .workspace-sidebar-panel {
   margin-top: 18px;
-  border: 1px solid #dfe7f2;
-  border-radius: 10px;
-  background: #fbfcff;
+  border: 1px solid var(--ws-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--ws-shadow-sm);
   padding: 12px;
+  transition: transform 150ms ease, box-shadow 180ms ease;
+}
+
+.workspace-sidebar-panel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(17, 38, 63, 0.12);
 }
 
 .workspace-sidebar-panel-header {
@@ -15,26 +22,29 @@
 
 .workspace-sidebar-panel-header h3 {
   margin: 0;
-  font-size: 0.92rem;
-  color: #415873;
+  font-size: 0.9rem;
+  color: var(--ws-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
 .workspace-sidebar-panel-header span {
-  min-width: 22px;
-  height: 22px;
+  min-width: 24px;
+  height: 24px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #edf2fb;
-  color: #385276;
+  background: var(--ws-primary-soft);
+  color: var(--ws-primary);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .workspace-info {
-  margin: 6px 0;
-  font-size: 0.95rem;
+  margin: 8px 0;
+  color: var(--ws-text-muted);
+  font-size: 0.93rem;
 }
 
 .project-list {
@@ -50,7 +60,7 @@
 }
 
 .invitation-item {
-  border: 1px solid #dfe7f2;
+  border: 1px solid var(--ws-border);
   border-radius: 10px;
   background: #fff;
   padding: 10px 12px;
@@ -58,18 +68,25 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.invitation-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--ws-border-strong);
+  box-shadow: 0 10px 16px rgba(17, 38, 63, 0.08);
 }
 
 .invitation-title {
   margin: 0;
   font-weight: 700;
-  color: #20344f;
+  color: var(--ws-text);
 }
 
 .invitation-meta {
   margin: 4px 0 0;
-  color: #56708f;
-  font-size: 0.85rem;
+  color: var(--ws-text-muted);
+  font-size: 0.84rem;
 }
 
 .invitation-actions {
@@ -80,19 +97,25 @@
 
 .invitation-actions button {
   border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 9px 12px;
-  font: inherit;
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-family: var(--ws-font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .invitation-actions button:last-child {
-  background: #1f78ff;
+  background: var(--ws-primary);
   color: #fff;
 }
 
+.invitation-actions button:last-child:hover {
+  background: var(--ws-primary-hover);
+}
+
 .invitation-actions .neutral {
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   border-color: #c9d8f3;
   color: #284673;
 }
@@ -100,6 +123,12 @@
 .invitation-actions button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.invitation-actions button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 640px) {

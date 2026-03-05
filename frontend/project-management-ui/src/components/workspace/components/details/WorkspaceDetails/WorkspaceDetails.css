@@ -3,6 +3,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+  background: transparent;
 }
 
 .workspace-details > * {
@@ -10,12 +11,12 @@
 }
 
 .workspace-details:focus {
-  outline: 2px solid #5f96e8;
+  outline: 2px solid var(--ws-primary);
   outline-offset: -2px;
 }
 
 .workspace-details::-webkit-scrollbar {
-  width: 12px;
+  width: 11px;
 }
 
 .workspace-details::-webkit-scrollbar-track {
@@ -25,31 +26,48 @@
 .workspace-details::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
   border-radius: 999px;
-  background: #c3d2e7;
+  background: #bfd0e6;
   background-clip: padding-box;
 }
 
 .workspace-details::-webkit-scrollbar-thumb:hover {
-  background: #9eb4d2;
+  background: #9db7d9;
   background-clip: padding-box;
 }
 
 .workspace-empty-state {
-  color: #3e5875;
-  max-width: 420px;
-  padding-top: 40px;
+  max-width: 480px;
+  padding: 48px 34px;
+  border-radius: 18px;
+  border: 1px solid var(--ws-border);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--ws-shadow-sm);
+  color: var(--ws-text-muted);
+  transition: transform 160ms ease, box-shadow 200ms ease;
+}
+
+.workspace-empty-state:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(17, 38, 63, 0.12);
 }
 
 .workspace-empty-state h2 {
   margin: 0 0 12px;
+  font-size: 1.5rem;
+  color: var(--ws-text);
 }
 
 .workspace-empty-state p {
   margin: 8px 0 0;
+  line-height: 1.5;
 }
 
 @media (max-width: 900px) {
   .workspace-details {
     padding: 20px 16px 28px;
+  }
+
+  .workspace-empty-state {
+    padding: 30px 22px;
   }
 }

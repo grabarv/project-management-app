@@ -1,7 +1,8 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 23, 41, 0.45);
+  background: rgba(15, 34, 59, 0.46);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,25 +11,28 @@
 }
 
 .modal-card {
-  width: min(460px, 100%);
+  width: min(470px, 100%);
   background: #fff;
-  border-radius: 12px;
-  border: 1px solid #d7deea;
-  box-shadow: 0 18px 40px rgba(9, 24, 42, 0.2);
-  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--ws-border);
+  box-shadow: var(--ws-shadow-md);
+  padding: 22px;
+  animation: modal-enter 180ms ease-out;
 }
 
 .modal-card h3 {
   margin: 0 0 8px;
+  font-size: 1.25rem;
 }
 
 .modal-card p {
   margin: 0;
-  color: #354e6c;
+  color: var(--ws-text-muted);
+  line-height: 1.5;
 }
 
 .modal-actions {
-  margin-top: 18px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
@@ -36,22 +40,32 @@
 
 .modal-actions button {
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 9px 12px;
-  font: inherit;
+  font-family: var(--ws-font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .modal-actions .neutral {
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   border-color: #c9d8f3;
   color: #284673;
 }
 
 .modal-actions .danger {
-  background: #fde7e7;
+  background: var(--ws-danger-soft);
   border-color: #f3b2b2;
-  color: #961f1f;
+  color: var(--ws-danger);
+}
+
+.modal-actions .neutral:hover {
+  background: #dfeaff;
+}
+
+.modal-actions .danger:hover {
+  background: #ffe2e2;
 }
 
 .modal-actions button:disabled {
@@ -59,7 +73,28 @@
   cursor: default;
 }
 
+.modal-actions button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 640px) {
+  .modal-card {
+    padding: 18px;
+  }
+
   .modal-actions {
     flex-direction: column;
     align-items: stretch;

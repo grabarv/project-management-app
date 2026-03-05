@@ -1,14 +1,20 @@
 .project-tasks-panel {
   margin-top: 24px;
-  border: 1px solid #dfe7f2;
-  border-radius: 12px;
-  background: #fff;
+  border: 1px solid var(--ws-border);
+  border-radius: 16px;
+  background: var(--ws-surface);
+  box-shadow: var(--ws-shadow-sm);
   padding: 14px;
+  transition: transform 150ms ease, box-shadow 180ms ease;
+}
+
+.project-tasks-panel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(17, 38, 63, 0.12);
 }
 
 .project-tasks-panel-secondary {
-  background: #fbfcff;
-  border-color: #d8e2f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
 .project-tasks-header {
@@ -20,47 +26,70 @@
 
 .project-tasks-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.04rem;
 }
 
 .workspace-info {
-  margin: 6px 0;
-  font-size: 0.95rem;
+  margin: 8px 0;
+  color: var(--ws-text-muted);
+  font-size: 0.94rem;
 }
 
 .create-project-form {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .create-project-form input,
 .create-project-form textarea,
 .create-project-form select {
-  border: 1px solid #c8d4e6;
-  border-radius: 8px;
-  padding: 9px 10px;
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
   font: inherit;
+  color: var(--ws-text);
   background: #fff;
 }
 
+.create-project-form input:focus,
+.create-project-form textarea:focus,
+.create-project-form select:focus {
+  outline: none;
+  border-color: var(--ws-primary);
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.18);
+}
+
 .create-project-form textarea {
-  min-height: 70px;
+  min-height: 82px;
   resize: vertical;
 }
 
 .create-project-form button {
   border: 0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  background: #1f78ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--ws-primary);
   color: #fff;
-  font-weight: 600;
+  font-family: var(--ws-font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.create-project-form button:hover {
+  background: var(--ws-primary-hover);
+  transform: translateY(-1px);
 }
 
 .create-project-form button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.create-project-form button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
 }
 
 .create-project-actions {
@@ -71,8 +100,12 @@
 
 .create-project-actions .neutral {
   border: 1px solid #c9d8f3;
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   color: #284673;
+}
+
+.create-project-actions .neutral:hover {
+  background: #e1ecff;
 }
 
 @media (max-width: 640px) {

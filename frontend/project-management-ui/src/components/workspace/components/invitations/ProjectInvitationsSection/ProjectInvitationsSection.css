@@ -1,26 +1,32 @@
 .project-tasks-panel {
   margin-top: 24px;
-  border: 1px solid #dfe7f2;
-  border-radius: 12px;
-  background: #fff;
+  border: 1px solid var(--ws-border);
+  border-radius: 16px;
+  background: var(--ws-surface);
+  box-shadow: var(--ws-shadow-sm);
   padding: 14px;
+  transition: transform 150ms ease, box-shadow 180ms ease;
+}
+
+.project-tasks-panel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(17, 38, 63, 0.12);
 }
 
 .project-tasks-panel-secondary {
-  background: #fbfcff;
-  border-color: #d8e2f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
 .project-tasks-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .project-tasks-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.04rem;
 }
 
 .participant-list {
@@ -33,15 +39,17 @@
 .participant-chip {
   border-radius: 999px;
   padding: 6px 10px;
-  background: #edf3ff;
-  color: #29496f;
+  border: 1px solid #cfe0f4;
+  background: #edf4ff;
+  color: #2b4f78;
   font-size: 0.82rem;
   font-weight: 600;
 }
 
 .participant-chip-owner {
-  background: #dff3e6;
-  color: #1f6a3a;
+  background: #e2f3e7;
+  border-color: #c6e6d0;
+  color: #266b40;
 }
 
 .participant-chip-removable {
@@ -56,11 +64,21 @@
   width: 20px;
   height: 20px;
   border-radius: 999px;
-  background: #f6d9d9;
-  color: #8f1f1f;
+  background: #fbe2e2;
+  color: #993131;
   font-size: 0.8rem;
   line-height: 1;
   cursor: pointer;
+}
+
+.participant-chip-remove:hover {
+  background: #f7cccc;
+  transform: scale(1.06);
+}
+
+.participant-chip-remove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(187, 46, 46, 0.18);
 }
 
 .participant-chip-remove:disabled {
@@ -75,9 +93,11 @@
 }
 
 .invitation-form label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #415873;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ws-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
 .invitation-form-row {
@@ -87,32 +107,50 @@
 
 .invitation-form-row input {
   flex: 1;
-  border: 1px solid #c8d4e6;
-  border-radius: 8px;
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 10px;
   padding: 9px 10px;
   font: inherit;
   background: #fff;
 }
 
+.invitation-form-row input:focus {
+  outline: none;
+  border-color: var(--ws-primary);
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.18);
+}
+
 .invitation-form-row button,
 .invitation-item > button {
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 9px 12px;
-  font: inherit;
+  font-family: var(--ws-font-heading);
+  font-size: 0.84rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .invitation-form-row button {
-  background: #1f78ff;
+  background: var(--ws-primary);
   color: #fff;
+}
+
+.invitation-form-row button:hover {
+  background: var(--ws-primary-hover);
+  transform: translateY(-1px);
 }
 
 .invitation-item > button,
 .invitation-item > .danger {
-  background: #fde7e7;
-  border-color: #f3b2b2;
-  color: #961f1f;
+  background: var(--ws-danger-soft);
+  border-color: #f4c0c0;
+  color: var(--ws-danger);
+}
+
+.invitation-item > button:hover,
+.invitation-item > .danger:hover {
+  background: #ffe3e3;
 }
 
 .invitation-form-row button:disabled,
@@ -122,8 +160,9 @@
 }
 
 .workspace-info {
-  margin: 6px 0;
-  font-size: 0.95rem;
+  margin: 8px 0;
+  color: var(--ws-text-muted);
+  font-size: 0.93rem;
 }
 
 .project-list {
@@ -139,7 +178,7 @@
 }
 
 .invitation-item {
-  border: 1px solid #dfe7f2;
+  border: 1px solid var(--ws-border);
   border-radius: 10px;
   background: #fff;
   padding: 10px 12px;
@@ -147,17 +186,31 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.invitation-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--ws-border-strong);
+  box-shadow: 0 10px 16px rgba(17, 38, 63, 0.08);
+}
+
+.invitation-form-row button:focus-visible,
+.invitation-item > button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
 }
 
 .invitation-title {
   margin: 0;
   font-weight: 700;
-  color: #20344f;
+  color: var(--ws-text);
 }
 
 .invitation-meta {
   margin: 4px 0 0;
-  color: #56708f;
+  color: var(--ws-text-muted);
   font-size: 0.85rem;
 }
 

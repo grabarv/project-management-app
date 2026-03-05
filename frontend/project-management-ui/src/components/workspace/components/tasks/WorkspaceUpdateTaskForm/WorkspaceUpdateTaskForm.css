@@ -1,10 +1,16 @@
 .task-details-view {
-  border: 1px solid #dfe7f2;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 8px 20px rgba(11, 28, 48, 0.08);
+  border: 1px solid var(--ws-border);
+  border-radius: 16px;
+  background: var(--ws-surface);
+  box-shadow: var(--ws-shadow-sm);
   padding: 20px;
   max-width: 760px;
+  transition: transform 150ms ease, box-shadow 180ms ease;
+}
+
+.task-details-view:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(17, 38, 63, 0.12);
 }
 
 .task-details-header {
@@ -17,46 +23,65 @@
 
 .task-details-header h3 {
   margin: 0;
+  font-size: 1.15rem;
 }
 
 .task-details-header .neutral {
   border: 1px solid #c9d8f3;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 9px 12px;
-  font: inherit;
+  font-family: var(--ws-font-heading);
+  font-size: 0.86rem;
+  font-weight: 700;
   cursor: pointer;
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   color: #284673;
 }
 
 .create-project-form {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .create-project-form input,
 .create-project-form textarea,
 .create-project-form select {
-  border: 1px solid #c8d4e6;
-  border-radius: 8px;
-  padding: 9px 10px;
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
   font: inherit;
+  color: var(--ws-text);
   background: #fff;
 }
 
+.create-project-form input:focus,
+.create-project-form textarea:focus,
+.create-project-form select:focus {
+  outline: none;
+  border-color: var(--ws-primary);
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.18);
+}
+
 .create-project-form textarea {
-  min-height: 70px;
+  min-height: 82px;
   resize: vertical;
 }
 
 .create-project-form button {
   border: 0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  background: #1f78ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--ws-primary);
   color: #fff;
-  font-weight: 600;
+  font-family: var(--ws-font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.create-project-form button:hover {
+  background: var(--ws-primary-hover);
+  transform: translateY(-1px);
 }
 
 .create-project-form button:disabled,
@@ -74,8 +99,21 @@
 
 .create-project-actions .neutral {
   border: 1px solid #c9d8f3;
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   color: #284673;
+}
+
+.create-project-actions .neutral:hover,
+.task-details-header .neutral:hover {
+  background: #e1ecff;
+}
+
+.create-project-form button:focus-visible,
+.create-project-actions .neutral:focus-visible,
+.task-details-header .neutral:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 900px) {

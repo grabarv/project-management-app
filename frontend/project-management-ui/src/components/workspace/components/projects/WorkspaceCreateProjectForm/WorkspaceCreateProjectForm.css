@@ -1,40 +1,74 @@
 .workspace-create-panel {
-  max-width: 560px;
+  max-width: 640px;
+  border: 1px solid var(--ws-border);
+  border-radius: 18px;
+  background: var(--ws-surface);
+  box-shadow: var(--ws-shadow-sm);
+  padding: 22px;
+  transition: transform 160ms ease, box-shadow 200ms ease;
+}
+
+.workspace-create-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(17, 38, 63, 0.13);
 }
 
 .workspace-create-panel p {
   margin: 8px 0 18px;
-  color: #4f647e;
+  color: var(--ws-text-muted);
 }
 
 .create-project-form {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .create-project-form input,
 .create-project-form textarea,
 .create-project-form select {
-  border: 1px solid #c8d4e6;
-  border-radius: 8px;
-  padding: 9px 10px;
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
   font: inherit;
+  color: var(--ws-text);
   background: #fff;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.create-project-form input:focus,
+.create-project-form textarea:focus,
+.create-project-form select:focus {
+  outline: none;
+  border-color: var(--ws-primary);
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.18);
 }
 
 .create-project-form textarea {
-  min-height: 70px;
+  min-height: 92px;
   resize: vertical;
 }
 
 .create-project-form button {
   border: 0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  background: #1f78ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--ws-primary);
   color: #fff;
-  font-weight: 600;
+  font-family: var(--ws-font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.create-project-form button:hover {
+  background: var(--ws-primary-hover);
+  transform: translateY(-1px);
+}
+
+.create-project-form button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 102, 216, 0.2);
+  transform: translateY(-1px);
 }
 
 .create-project-form button:disabled,
@@ -51,11 +85,19 @@
 
 .create-project-actions .neutral {
   border: 1px solid #c9d8f3;
-  background: #ebf1fb;
+  background: var(--ws-neutral-soft);
   color: #284673;
 }
 
+.create-project-actions .neutral:hover {
+  background: #e1ecff;
+}
+
 @media (max-width: 640px) {
+  .workspace-create-panel {
+    padding: 18px;
+  }
+
   .create-project-actions {
     flex-direction: column;
     align-items: stretch;
