@@ -2,6 +2,7 @@
   padding: 28px 20px;
   background: linear-gradient(180deg, var(--ws-surface) 0%, var(--ws-surface-soft) 100%);
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }

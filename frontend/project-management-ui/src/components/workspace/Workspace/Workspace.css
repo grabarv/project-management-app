@@ -26,7 +26,8 @@
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+  /* Give the sidebar a bit more room on desktop so list badges stay visible. */
+  grid-template-columns: clamp(320px, 28vw, 380px) minmax(0, 1fr);
   background:
     radial-gradient(circle at 8% -10%, var(--ws-bg-accent) 0, transparent 38%),
     linear-gradient(180deg, #f4f8ff 0%, var(--ws-bg) 100%);
