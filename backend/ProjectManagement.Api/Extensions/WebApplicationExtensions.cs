@@ -52,136 +52,17 @@ public static class WebApplicationExtensions
     }
 
     /// <summary>
-    /// Seeds a small demo dataset once for a newly created/empty database.
+    /// Seeds a larger, interconnected demo dataset once for a newly created/empty database.
     /// </summary>
     private static void SeedSampleData(AppDbContext db, IPasswordHasher<AppUser> passwordHasher)
     {
-        // Seed base demo users/projects only for an empty database.
-        if (!db.Users.Any())
-        {
-            SeedUsersAndProjects(db, passwordHasher);
-        }
-
         NormalizeLegacyTaskStatuses(db);
-
-        // Tasks are seeded separately so they can be added after a later migration too.
-        SeedTasks(db);
-    }
-
-    private static void SeedUsersAndProjects(AppDbContext db, IPasswordHasher<AppUser> passwordHasher)
-    {
-        var now = DateTime.UtcNow;
-
-        var alice = new AppUser
-        {
-            Username = "alice",
-            Email = "alice@example.com",
-            PasswordHash = string.Empty,
-            CreatedAtUtc = now
-        };
-        alice.PasswordHash = passwordHasher.HashPassword(alice, "P@ssw0rd123");
-
-        var bob = new AppUser
-        {
-            Username = "bob",
-            Email = "bob@example.com",
-            PasswordHash = string.Empty,
-            CreatedAtUtc = now
-        };
-        bob.PasswordHash = passwordHasher.HashPassword(bob, "P@ssw0rd123");
-
-        var carol = new AppUser
-        {
-            Username = "carol",
-            Email = "carol@example.com",
-            PasswordHash = string.Empty,
-            CreatedAtUtc = now
-        };
-        carol.PasswordHash = passwordHasher.HashPassword(carol, "P@ssw0rd123");
-
-        db.Users.AddRange(alice, bob, carol);
-        db.SaveChanges();
-
-        var websiteRedesign = new AppProject
-        {
-            Name = "Website Redesign",
-            Description = "Refresh landing page, auth flow, and workspace UI.",
-            CreatedAtUtc = now,
-            DueDateUtc = now.AddDays(14),
-            CreatedByUserId = alice.Id,
-            ParticipatingUsers = new List<AppUser> { bob, carol }
-        };
-
-        var apiCleanup = new AppProject
-        {
-            Name = "API Cleanup",
-            Description = "Refactor endpoints and standardize API responses.",
-            CreatedAtUtc = now,
-            DueDateUtc = now.AddDays(10),
-            CreatedByUserId = bob.Id,
-            ParticipatingUsers = new List<AppUser> { alice }
-        };
-
-        db.Projects.AddRange(websiteRedesign, apiCleanup);
-        db.SaveChanges();
-    }
-
-    private static void SeedTasks(AppDbContext db)
-    {
-        if (db.Tasks.Any())
+        if (db.Users.Any())
         {
             return;
         }
 
-        var users = db.Users.AsNoTracking().ToDictionary(user => user.Username);
-        var projects = db.Projects.AsNoTracking().ToDictionary(project => project.Name);
-
-        if (!users.TryGetValue("alice", out var alice) ||
-            !users.TryGetValue("bob", out var bob) ||
-            !users.TryGetValue("carol", out var carol) ||
-            !projects.TryGetValue("Website Redesign", out var websiteRedesign) ||
-            !projects.TryGetValue("API Cleanup", out var apiCleanup))
-        {
-            // Skip if demo data is missing or was replaced manually.
-            return;
-        }
-
-        var now = DateTime.UtcNow;
-
-        // Tasks are seeded after projects so foreign keys and assignment checks are valid.
-        db.Tasks.AddRange(
-            new AppTask
-            {
-                Name = "Create wireframes",
-                Description = "Prepare initial layout wireframes for desktop and mobile.",
-                Status = AppTaskStatus.InProgress.ToString(),
-                CreatedAtUtc = now,
-                DueDateUtc = now.AddDays(5),
-                ProjectId = websiteRedesign.Id,
-                AssignedToUserId = bob.Id
-            },
-            new AppTask
-            {
-                Name = "Review color palette",
-                Description = "Validate brand colors and accessibility contrast.",
-                Status = AppTaskStatus.InProgress.ToString(),
-                CreatedAtUtc = now,
-                DueDateUtc = now.AddDays(7),
-                ProjectId = websiteRedesign.Id,
-                AssignedToUserId = carol.Id
-            },
-            new AppTask
-            {
-                Name = "Unify error responses",
-                Description = "Return consistent JSON payloads for 4xx/5xx responses.",
-                Status = AppTaskStatus.InProgress.ToString(),
-                CreatedAtUtc = now,
-                DueDateUtc = now.AddDays(4),
-                ProjectId = apiCleanup.Id,
-                AssignedToUserId = alice.Id
-            });
-
-        db.SaveChanges();
+        SeedUsersProjectsInvitationsAndTasks(db, passwordHasher);
     }
 
     private static void NormalizeLegacyTaskStatuses(AppDbContext db)
@@ -202,4 +83,287 @@ public static class WebApplicationExtensions
 
         db.SaveChanges();
     }
+
+    private static void SeedUsersProjectsInvitationsAndTasks(
+        AppDbContext db,
+        IPasswordHasher<AppUser> passwordHasher)
+    {
+        var now = DateTime.UtcNow;
+
+        var users = BuildUsers(passwordHasher, now);
+        db.Users.AddRange(users);
+        db.SaveChanges();
+
+        var usersByUsername = users.ToDictionary(user => user.Username);
+
+        var projectPlans = BuildProjectPlans();
+        var projects = projectPlans
+            .Select(plan => new AppProject
+            {
+                Name = plan.Name,
+                Description = plan.Description,
+                CreatedAtUtc = now.AddDays(-plan.CreatedDaysAgo),
+                DueDateUtc = now.AddDays(plan.DueInDays),
+                CreatedByUserId = usersByUsername[plan.OwnerUsername].Id,
+                ParticipatingUsers = plan.ParticipantUsernames
+                    .Select(username => usersByUsername[username])
+                    .ToList()
+            })
+            .ToList();
+
+        db.Projects.AddRange(projects);
+        db.SaveChanges();
+
+        var projectsByName = projects.ToDictionary(project => project.Name);
+        db.Tasks.AddRange(BuildTasks(projects, now));
+        db.ProjectInvitations.AddRange(BuildInvitations(projectsByName, usersByUsername, now));
+        db.SaveChanges();
+    }
+
+    private static List<AppUser> BuildUsers(
+        IPasswordHasher<AppUser> passwordHasher,
+        DateTime now)
+    {
+        var userSpecs = new[]
+        {
+            ("alice", "alice@example.com"),
+            ("bob", "bob@example.com"),
+            ("carol", "carol@example.com"),
+            ("dave", "dave@example.com"),
+            ("emma", "emma@example.com"),
+            ("frank", "frank@example.com"),
+            ("grace", "grace@example.com")
+        };
+
+        var users = userSpecs
+            .Select((spec, index) => new AppUser
+            {
+                Username = spec.Item1,
+                Email = spec.Item2,
+                PasswordHash = string.Empty,
+                CreatedAtUtc = now.AddDays(-(220 - (index * 4)))
+            })
+            .ToList();
+
+        foreach (var user in users)
+        {
+            user.PasswordHash = passwordHasher.HashPassword(user, "password123");
+        }
+
+        return users;
+    }
+
+    private static IReadOnlyList<ProjectSeedPlan> BuildProjectPlans()
+    {
+        return
+        [
+            new(
+                "Orion Core API",
+                "Shared domain API for workspace, projects, invitations, and tasks.",
+                "alice",
+                70,
+                45,
+                ["bob", "carol", "dave"]),
+            new(
+                "Orion Tenant Onboarding",
+                "Tenant bootstrap automation, first-run wizard, and defaults provisioning.",
+                "alice",
+                62,
+                35,
+                ["carol", "emma", "frank"]),
+            new(
+                "Orion UI Workspace",
+                "Workspace shell, split layout, and project navigation experience.",
+                "bob",
+                68,
+                50,
+                ["carol", "dave", "emma"]),
+            new(
+                "Orion Design System",
+                "Shared components, tokens, and accessibility patterns for product UI.",
+                "bob",
+                59,
+                34,
+                ["dave", "frank", "grace"]),
+            new(
+                "Orion Data Pipeline",
+                "ETL jobs for project metrics and daily aggregation snapshots.",
+                "carol",
+                64,
+                41,
+                ["dave", "emma", "frank"]),
+            new(
+                "Orion Analytics Dashboard",
+                "Operational dashboard with workload and throughput trend widgets.",
+                "carol",
+                53,
+                31,
+                ["emma", "grace", "alice"]),
+            new(
+                "Orion Mobile Companion",
+                "Mobile app for project updates, task inbox, and daily standups.",
+                "dave",
+                58,
+                42,
+                ["emma", "frank", "grace"]),
+            new(
+                "Orion Notification Service",
+                "Real-time notification fanout for mentions, tasks, and invitation events.",
+                "dave",
+                49,
+                28,
+                ["frank", "alice", "bob"]),
+            new(
+                "Orion QA Automation",
+                "Regression test matrix for API contracts and critical UI workflows.",
+                "emma",
+                57,
+                39,
+                ["frank", "grace", "alice"]),
+            new(
+                "Orion Release Train",
+                "Release governance, branch policy checks, and production rollout plan.",
+                "emma",
+                46,
+                27,
+                ["grace", "bob", "carol"]),
+            new(
+                "Orion Infrastructure Hardening",
+                "Security baselines, dependency hygiene, and policy-as-code checks.",
+                "frank",
+                56,
+                38,
+                ["grace", "alice", "bob"]),
+            new(
+                "Orion Incident Command Center",
+                "Incident response runbooks, paging flow, and postmortem automation.",
+                "frank",
+                43,
+                24,
+                ["alice", "carol", "dave"]),
+            new(
+                "Orion Customer Portal",
+                "External portal for project visibility and asynchronous collaboration.",
+                "grace",
+                54,
+                36,
+                ["alice", "bob", "carol"]),
+            new(
+                "Orion Knowledge Base",
+                "Living documentation and cross-team decision archive.",
+                "grace",
+                41,
+                22,
+                ["bob", "dave", "emma"])
+        ];
+    }
+
+    private static List<AppTask> BuildTasks(
+        IReadOnlyCollection<AppProject> projects,
+        DateTime now)
+    {
+        var templates = new (string Title, string Description)[]
+        {
+            ("Scope lock", "Finalize scope boundaries and confirm cross-team dependencies."),
+            ("Implementation slice", "Deliver the next implementation slice and update notes."),
+            ("QA pass", "Validate happy-path and edge-case behavior before handoff."),
+            ("Observability updates", "Add logs/metrics/traces for the newest project changes."),
+            ("Documentation sync", "Sync technical docs and update onboarding references."),
+            ("Stakeholder demo", "Prepare a short walkthrough for the next review meeting.")
+        };
+
+        var tasks = new List<AppTask>();
+
+        foreach (var project in projects.OrderBy(project => project.CreatedAtUtc))
+        {
+            var assignableUserIds = new List<int> { project.CreatedByUserId };
+            assignableUserIds.AddRange(project.ParticipatingUsers.Select(user => user.Id));
+
+            for (var taskIndex = 0; taskIndex < templates.Length; taskIndex++)
+            {
+                var template = templates[taskIndex];
+                var createdAtUtc = project.CreatedAtUtc.AddDays(taskIndex * 2);
+                var dueDateUtc = createdAtUtc.AddDays(8 + (taskIndex * 2));
+
+                if (dueDateUtc > project.DueDateUtc)
+                {
+                    dueDateUtc = project.DueDateUtc.AddDays(-1);
+                }
+
+                if (dueDateUtc <= createdAtUtc)
+                {
+                    dueDateUtc = createdAtUtc.AddDays(1);
+                }
+
+                tasks.Add(new AppTask
+                {
+                    Name = $"{template.Title} - {project.Name}",
+                    Description = $"{template.Description} Context: {project.Name}.",
+                    Status = (taskIndex % 3 == 0 ? AppTaskStatus.Done : AppTaskStatus.InProgress).ToString(),
+                    CreatedAtUtc = createdAtUtc > now ? now.AddHours(-1) : createdAtUtc,
+                    DueDateUtc = dueDateUtc,
+                    ProjectId = project.Id,
+                    AssignedToUserId = assignableUserIds[taskIndex % assignableUserIds.Count]
+                });
+            }
+        }
+
+        return tasks;
+    }
+
+    private static List<AppProjectInvitation> BuildInvitations(
+        IReadOnlyDictionary<string, AppProject> projectsByName,
+        IReadOnlyDictionary<string, AppUser> usersByUsername,
+        DateTime now)
+    {
+        var plans = new[]
+        {
+            new InvitationSeedPlan("Orion Core API", "alice", "emma", ProjectInvitationStatus.Pending, 7),
+            new InvitationSeedPlan("Orion Tenant Onboarding", "alice", "grace", ProjectInvitationStatus.Pending, 6),
+            new InvitationSeedPlan("Orion UI Workspace", "bob", "frank", ProjectInvitationStatus.Pending, 6),
+            new InvitationSeedPlan("Orion Design System", "bob", "alice", ProjectInvitationStatus.Pending, 5),
+            new InvitationSeedPlan("Orion Data Pipeline", "carol", "bob", ProjectInvitationStatus.Pending, 5),
+            new InvitationSeedPlan("Orion Analytics Dashboard", "carol", "frank", ProjectInvitationStatus.Pending, 4),
+            new InvitationSeedPlan("Orion Mobile Companion", "dave", "carol", ProjectInvitationStatus.Pending, 4),
+            new InvitationSeedPlan("Orion Notification Service", "dave", "grace", ProjectInvitationStatus.Pending, 3),
+            new InvitationSeedPlan("Orion QA Automation", "emma", "dave", ProjectInvitationStatus.Declined, 8),
+            new InvitationSeedPlan("Orion Release Train", "emma", "alice", ProjectInvitationStatus.Canceled, 8),
+            new InvitationSeedPlan("Orion Infrastructure Hardening", "frank", "emma", ProjectInvitationStatus.Declined, 9)
+        };
+
+        return plans
+            .Select(plan =>
+            {
+                var createdAtUtc = now.AddDays(-plan.CreatedDaysAgo);
+                DateTime? respondedAtUtc = plan.Status == ProjectInvitationStatus.Pending
+                    ? null
+                    : createdAtUtc.AddDays(1);
+
+                return new AppProjectInvitation
+                {
+                    ProjectId = projectsByName[plan.ProjectName].Id,
+                    InvitedByUserId = usersByUsername[plan.InvitedByUsername].Id,
+                    InvitedUserId = usersByUsername[plan.InvitedUsername].Id,
+                    Status = plan.Status.ToString(),
+                    CreatedAtUtc = createdAtUtc,
+                    RespondedAtUtc = respondedAtUtc
+                };
+            })
+            .ToList();
+    }
+
+    private sealed record ProjectSeedPlan(
+        string Name,
+        string Description,
+        string OwnerUsername,
+        int CreatedDaysAgo,
+        int DueInDays,
+        IReadOnlyList<string> ParticipantUsernames);
+
+    private sealed record InvitationSeedPlan(
+        string ProjectName,
+        string InvitedByUsername,
+        string InvitedUsername,
+        ProjectInvitationStatus Status,
+        int CreatedDaysAgo);
 }
