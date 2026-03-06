@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: project-management-db
+    environment:
+      # Keep these aligned with the app connection string below.
+      POSTGRES_DB: ${POSTGRES_DB:-project_management}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    # Keep Postgres internal to the Docker network to avoid host-port conflicts.
+    expose:
+      - "5432"
+    volumes:
+      - project-management-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-project_management}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    container_name: project-management-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      # In Docker network, "postgres" resolves to the DB service container.
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-project_management};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "8080:8080"
+
+volumes:
+  project-management-db-data:

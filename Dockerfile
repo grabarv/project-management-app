@@ -25,6 +25,11 @@ RUN dotnet publish backend/ProjectManagement.Api/ProjectManagement.Api.csproj -c
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
+# Npgsql may try loading GSSAPI support; install runtime lib to avoid warning noise.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
