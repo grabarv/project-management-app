@@ -5,10 +5,13 @@ import ProjectInvitationsSection from "../invitations/ProjectInvitationsSection/
 /**
  * Project details view shown when no task subview is active.
  */
-export default function ProjectDetailsContent({ onOpenProjectDelete }) {
+export default function ProjectDetailsContent({ onOpenProjectDelete, onOpenProjectLeave }) {
   return (
     <article>
-      <ProjectSummaryCard onOpenProjectDelete={onOpenProjectDelete} />
+      <ProjectSummaryCard
+        onOpenProjectDelete={onOpenProjectDelete}
+        onOpenProjectLeave={onOpenProjectLeave}
+      />
       <ProjectInvitationsSection />
       <ProjectTasksSection />
     </article>

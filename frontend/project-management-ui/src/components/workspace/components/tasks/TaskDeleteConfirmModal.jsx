@@ -43,6 +43,7 @@ export default function TaskDeleteConfirmModal({ taskId, taskName, onClose }) {
           This action will permanently remove <strong>{taskName}</strong>.
         </>
       }
+      submittingLabel="Deleting..."
       isSubmitting={isDeleting}
       onClose={onClose}
       onConfirm={handleConfirmDelete}

@@ -121,6 +121,12 @@ export function useWorkspaceState(currentUser, showError) {
     await loadProjects();
   }, [loadProjects]);
 
+  // Leaving a project has the same state impact as deleting currently selected project.
+  const handleProjectLeft = useCallback(async () => {
+    setSelectedProjectId(null);
+    await loadProjects();
+  }, [loadProjects]);
+
   const handleProjectUpdated = useCallback(
     async (projectId) => {
       await loadProjects();
@@ -147,6 +153,7 @@ export function useWorkspaceState(currentUser, showError) {
       reloadProjects: loadProjects,
       handleProjectCreated,
       handleProjectDeleted,
+      handleProjectLeft,
       handleProjectUpdated,
     },
   };

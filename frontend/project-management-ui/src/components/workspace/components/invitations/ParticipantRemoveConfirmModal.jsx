@@ -56,6 +56,7 @@ export default function ParticipantRemoveConfirmModal({
         </>
       }
       confirmLabel="Remove participant"
+      submittingLabel="Removing..."
       isSubmitting={isSubmitting}
       onClose={onClose}
       onConfirm={handleConfirmRemove}

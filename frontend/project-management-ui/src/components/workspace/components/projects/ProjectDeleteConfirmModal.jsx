@@ -50,6 +50,7 @@ export default function ProjectDeleteConfirmModal({ onClose }) {
           This action will permanently remove <strong>{selectedProject?.name}</strong>.
         </>
       }
+      submittingLabel="Deleting..."
       isSubmitting={isDeleting}
       onClose={onClose}
       onConfirm={handleConfirmDelete}

@@ -170,14 +170,18 @@ public sealed class ProjectService(AppDbContext db) : IProjectService
             return OperationResult<ProjectResponse>.Fail(404, "Project not found");
         }
 
-        if (project.CreatedByUserId != currentUserId)
-        {
-            return OperationResult<ProjectResponse>.Fail(403, "Only project creator can remove participants");
-        }
-
         if (participantUserId == project.CreatedByUserId)
         {
             return OperationResult<ProjectResponse>.Fail(400, "Project creator cannot be removed");
+        }
+
+        var isCreator = project.CreatedByUserId == currentUserId;
+        var isSelfRemoval = participantUserId == currentUserId;
+        if (!isCreator && !isSelfRemoval)
+        {
+            return OperationResult<ProjectResponse>.Fail(
+                403,
+                "Only project creator can remove other participants");
         }
 
         var participant = project.ParticipatingUsers.FirstOrDefault(user => user.Id == participantUserId);

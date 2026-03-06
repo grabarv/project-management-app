@@ -31,7 +31,7 @@ public interface IProjectService
 
     /// <summary>
     /// Removes an accepted participant from the project and deletes their project tasks.
-    /// Only the creator can perform this action.
+    /// Allowed for the creator (remove any participant) or for a participant leaving themselves.
     /// </summary>
     Task<OperationResult<ProjectResponse>> RemoveParticipantAsync(
         int projectId,

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ProjectDeleteConfirmModal from "../projects/ProjectDeleteConfirmModal";
+import ProjectLeaveConfirmModal from "../projects/ProjectLeaveConfirmModal";
 import ProjectDetailsContent from "./ProjectDetailsContent";
 
 /**
@@ -7,13 +8,18 @@ import ProjectDetailsContent from "./ProjectDetailsContent";
  */
 export default function WorkspaceProjectContent() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
   return (
     <>
-      <ProjectDetailsContent onOpenProjectDelete={() => setIsDeleteModalOpen(true)} />
+      <ProjectDetailsContent
+        onOpenProjectDelete={() => setIsDeleteModalOpen(true)}
+        onOpenProjectLeave={() => setIsLeaveModalOpen(true)}
+      />
       {isDeleteModalOpen && (
         <ProjectDeleteConfirmModal onClose={() => setIsDeleteModalOpen(false)} />
       )}
+      {isLeaveModalOpen && <ProjectLeaveConfirmModal onClose={() => setIsLeaveModalOpen(false)} />}
     </>
   );
 }

@@ -6,7 +6,7 @@ import "./ProjectSummaryCard.css";
 /**
  * Displays selected project information and top-level project actions.
  */
-export default function ProjectSummaryCard({ onOpenProjectDelete }) {
+export default function ProjectSummaryCard({ onOpenProjectDelete, onOpenProjectLeave }) {
   const {
     selectedProject,
     isCreator,
@@ -38,9 +38,14 @@ export default function ProjectSummaryCard({ onOpenProjectDelete }) {
             </button>
           </>
         ) : (
-          <p className="workspace-info">
-            You are a participant in this project and cannot update it.
-          </p>
+          <>
+            <p className="workspace-info">
+              You are a participant in this project and cannot update it.
+            </p>
+            <button type="button" className="danger" onClick={onOpenProjectLeave}>
+              Leave project
+            </button>
+          </>
         )}
       </div>
     </article>

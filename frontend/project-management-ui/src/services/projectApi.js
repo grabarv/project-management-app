@@ -157,3 +157,10 @@ export async function removeProjectParticipant(projectId, participantUserId, use
     };
   }
 }
+
+/**
+ * Removes current user from project participants and deletes their project tasks.
+ */
+export function leaveProject(projectId, userId) {
+  return removeProjectParticipant(projectId, userId, userId);
+}
