@@ -1,4 +1,5 @@
-const API_BASE_URL = "https://localhost:5001/api/projects";
+const API_ROOT = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+const API_BASE_URL = `${API_ROOT}/projects`;
 
 async function parseResponse(response, fallback) {
   return response.json().catch(() => fallback);

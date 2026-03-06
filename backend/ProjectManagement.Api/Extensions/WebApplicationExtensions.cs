@@ -35,6 +35,8 @@ public static class WebApplicationExtensions
 
         app.UseCors("FrontendDev");
         app.UseHttpsRedirection();
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
 
         return app;
     }
@@ -48,7 +50,20 @@ public static class WebApplicationExtensions
         app.MapProjectEndpoints();
         app.MapProjectInvitationEndpoints();
         app.MapTaskEndpoints();
+        MapFrontendFallback(app);
         return app;
+    }
+
+    /// <summary>
+    /// Maps SPA fallback only when built frontend assets are present in wwwroot.
+    /// </summary>
+    private static void MapFrontendFallback(WebApplication app)
+    {
+        var indexPath = Path.Combine(app.Environment.WebRootPath ?? string.Empty, "index.html");
+        if (File.Exists(indexPath))
+        {
+            app.MapFallbackToFile("index.html");
+        }
     }
 
     /// <summary>

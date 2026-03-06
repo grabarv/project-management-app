@@ -1,4 +1,5 @@
-const API_BASE_URL = "https://localhost:5001/api/auth";
+const API_ROOT = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+const API_BASE_URL = `${API_ROOT}/auth`;
 
 /**
  * Sends auth data and normalizes success/error responses for UI components.
